@@ -90,19 +90,20 @@ In a manual review of the 4 lenient-but-not-strict dev hits, 2 were judge direct
 | `black-10` | Tab character logic alters `current_column` | Column math defect | **Correct location, wrong category framing** (Reviewer framed finding around missing tests rather than logic defect). |
 | `black-1` | `ProcessPoolExecutor` error handling removed | Windows crash on pool failure | **Correct location, error semantic nuance** (Reviewer cited generic pool handling rather than specific OS worker failure). |
 
-### 2. Controlled Arm Comparison: Baseline vs. AST Retrieval ($N = 5$ bugs, $N = 5$ clean controls)
+### 2. Controlled Arm Comparison: Prompting vs. AST Retrieval ($N = 5$ bugs, $N = 5$ clean controls)
 
-To measure the empirical effect of AST symbol retrieval without model confounding, both arms were evaluated on the exact same 5 test cases (`black-12`, `black-13`, `black-2`, `black-3`, `black-4`) using the identical locked cross-vendor model pair (**Reviewer**: `gemini-3.5-flash-lite`, **Judge**: `minimax/minimax-m3.1-flash:free`):
+To isolate both prompting mode and AST retrieval without model confounding, three arms were evaluated on the exact same 5 test cases (`black-12`, `black-13`, `black-2`, `black-3`, `black-4`) using the identical locked cross-vendor model pair (**Reviewer**: `gemini-3.5-flash-lite`, **Judge**: `minimax/minimax-m3.1-flash:free`):
 
-| Arm | Retrieval Mode | Recall (Lenient) | Recall (Strict, Judged) | Clean FP Rate | Findings / Clean Diff | LLM Calls |
-|---|---|---|---|---|---|---|
-| `baseline` | None | 2 of 5 (40.0%) | 2 of 5 (40.0%) | 1 of 5 (20.0%) | 0.40 | 10 |
-| `multicat_symbol` | Deterministic AST | 1 of 5 (20.0%) | 1 of 5 (20.0%) | **0 of 5 (0.0%)** | **0.20** | 10 |
+| Arm | Mode | Retrieval | Recall (Lenient) | Recall (Strict, Judged) | Clean FP Rate | Findings / Clean Diff | LLM Calls |
+|---|---|---|---|---|---|---|---|
+| `baseline` | Generic | None | 2 of 5 (40.0%) | 2 of 5 (40.0%) | 1 of 5 (20.0%) | 0.40 | 10 |
+| `multicat_none` | Multi-category | None | 2 of 5 (40.0%) | 2 of 5 (40.0%) | 0 of 5 (0.0%) | 0.40 | 10 |
+| `multicat_symbol` | Multi-category | Deterministic AST | 1 of 5 (20.0%) | 1 of 5 (20.0%) | 0 of 5 (0.0%) | 0.20 | 10 |
 
-*Key Findings & Trade-Offs*:
-- **False Positive Suppression**: AST symbol retrieval grounded the model with repository context, completely eliminating high-severity clean false alarms (**0 of 5 vs. 1 of 5**) and halving spurious noise on clean pull requests (0.20 vs. 0.40 findings/clean diff).
-- **Recall Trade-Off**: Supplying additional symbol definitions and caller context increased model conservatism on bug detection, dropping recall from 2 of 5 to 1 of 5.
-- **Statistical Discipline**: At $N = 5$, Wilson score intervals overlap substantially ([11.8%, 76.9%] vs. [3.6%, 62.4%]); these results are reported as raw case counts to illustrate architectural context trade-offs rather than statistical finality.
+*Observations & Context Trade-Off*:
+- **Prompt Effect (`baseline` vs. `multicat_none`)**: Switching from a generic prompt to structured multi-category guidance reduced the severity of the false alarm on `black-2` from high to medium, lowering the clean false-positive rate (1 of 5 $\rightarrow$ 0 of 5) while holding recall unchanged at 2 of 5.
+- **Retrieval Effect (`multicat_none` vs. `multicat_symbol`)**: Adding deterministic AST repository context halved spurious findings on clean diffs (0.40 $\rightarrow$ 0.20 findings/diff), but increased model conservatism on bug detection, dropping recall from 2 of 5 to 1 of 5 (a single case difference on `black-13`).
+- **Defensible Interpretation**: On 5 `black` cases, AST retrieval had 1 fewer false positive and 1 fewer bug caught compared to baseline. At this $N$, that is a trade-off signal, not a generalized finding. At $N = 5$, Wilson score intervals overlap substantially ([11.8%, 76.9%] vs. [3.6%, 62.4%]); results are reported strictly as raw case counts.
 
 ### 3. Judge Calibration: In-Sample vs. Held-Out Generalization
 

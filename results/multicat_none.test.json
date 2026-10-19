@@ -1,57 +1,59 @@
 {
  "summary": {
-  "n_buggy": 3,
-  "n_clean": 3,
+  "n_buggy": 5,
+  "n_clean": 5,
   "recall_lenient": {
    "k": 2,
-   "n": 3,
-   "pct": 66.66666666666667,
-   "ci_low": 20.76549551264879,
-   "ci_high": 93.85096847238394
+   "n": 5,
+   "pct": 40.0,
+   "ci_low": 11.76182311592533,
+   "ci_high": 76.9280067791163
   },
   "recall_strict": {
-   "k": 1,
-   "n": 3,
-   "pct": 33.333333333333336,
-   "ci_low": 6.14903152761605,
-   "ci_high": 79.23450448735122
+   "k": 2,
+   "n": 5,
+   "pct": 40.0,
+   "ci_low": 11.76182311592533,
+   "ci_high": 76.9280067791163
   },
   "by_stratum": {
    "modification": {
     "lenient": {
      "k": 2,
-     "n": 3,
-     "pct": 66.66666666666667,
-     "ci_low": 20.76549551264879,
-     "ci_high": 93.85096847238394
+     "n": 5,
+     "pct": 40.0,
+     "ci_low": 11.76182311592533,
+     "ci_high": 76.9280067791163
     },
     "strict": {
-     "k": 1,
-     "n": 3,
-     "pct": 33.333333333333336,
-     "ci_low": 6.14903152761605,
-     "ci_high": 79.23450448735122
+     "k": 2,
+     "n": 5,
+     "pct": 40.0,
+     "ci_low": 11.76182311592533,
+     "ci_high": 76.9280067791163
     }
    }
   },
   "fp_rate_clean": {
-   "k": 1,
-   "n": 3,
-   "pct": 33.333333333333336,
-   "ci_low": 6.14903152761605,
-   "ci_high": 79.23450448735122
+   "k": 0,
+   "n": 5,
+   "pct": 0.0,
+   "ci_low": 0.0,
+   "ci_high": 43.4491494752081
   },
-  "findings_per_clean_diff": 0.3333333333333333,
+  "findings_per_clean_diff": 0.4,
   "precision_strict": {
-   "k": 1,
+   "k": 2,
    "n": 4,
-   "pct": 25.0,
-   "ci_low": 4.558606264463622,
-   "ci_high": 69.93639475573634
+   "pct": 50.0,
+   "ci_low": 15.003570882017147,
+   "ci_high": 84.99642911798286
   },
   "arm": "multicat_none",
-  "llm_calls": 9,
-  "retries": 3,
+  "reviewer_model": "gemini-3.5-flash-lite",
+  "judge_model": "minimax/minimax-m3.1-flash:free",
+  "llm_calls": 10,
+  "retries": 0,
   "failed_nodes": 0,
   "hunk_splits": 0,
   "judge_errors": 0
@@ -65,40 +67,25 @@
     "findings": [
      {
       "file": "black.py",
-      "line_start": 981,
-      "line_end": 988,
+      "line_start": 952,
+      "line_end": 964,
       "category": "logic",
       "severity": "high",
       "confidence": 0.95,
-      "message": "Replacing `_lambda_argument_depths` with a simple counter removes the check that the colon is at the lambda's bracket depth (`self._lambda_argument_depths[-1] == self.depth`). Any colon inside brackets in a lambda default argument (for example, in a dictionary default `lambda x={1: 2}: x` or a slice `lambda x=a[:1]: x`) will trigger this condition prematurely. This prematurely decrements `self.depth`, decrements `self._lambda_arguments` to 0, and causes the actual lambda colon to be missed, corrupting depth tracking.",
+      "message": "Replacing per-loop-depth tracking with a single integer counter (_for_loop_variable) causes nesting bugs. In nested for loops (e.g., 'for x in for y in z:'), encountering the first 'in' will decrement the counter and the depth regardless of nesting level, leaving the depth mismatched and failing to properly track the outer loop.",
       "evidence": [
-       "if self._lambda_arguments and leaf.type == token.COLON:",
-       "    self.depth -= 1",
-       "    self._lambda_arguments -= 1"
+       "952           if leaf.type == token.NAME and leaf.value == \"for\":",
+       "954 +             self._for_loop_variable += 1",
+       "961 +         if self._for_loop_variable and leaf.type == token.NAME and leaf.value == \"in\":"
       ],
-      "suggested_fix": "Restore tracking of lambda depths with a stack (`List[int]`) and verify `self._lambda_argument_depths and self._lambda_argument_depths[-1] == self.depth` before decrementing."
-     },
-     {
-      "file": "black.py",
-      "line_start": 959,
-      "line_end": 966,
-      "category": "logic",
-      "severity": "medium",
-      "confidence": 0.9,
-      "message": "Replacing `_for_loop_depths` with a simple counter removes the check that the `in` token is at the expected loop bracket depth. If an `in` token appears inside brackets within the loop target expression (for example, in an index expression like `for a[x in y] in z:`), it will match prematurely, decrementing `self.depth` and `self._for_loop_variable` at the wrong depth and causing the actual loop `in` delimiter to be ignored.",
-      "evidence": [
-       "if self._for_loop_variable and leaf.type == token.NAME and leaf.value == \"in\":",
-       "    self.depth -= 1",
-       "    self._for_loop_variable -= 1"
-      ],
-      "suggested_fix": "Restore tracking of for-loop depths with a stack (`List[int]`) and verify `self._for_loop_depths and self._for_loop_depths[-1] == self.depth` before decrementing."
+      "suggested_fix": null
      }
     ],
     "failed_nodes": [],
-    "retries": 1,
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 2
+    "llm_calls": 1
    },
    "clean": {
     "summary": "",
@@ -115,32 +102,37 @@
    "stratum": "modification",
    "buggy": {
     "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
     "findings": [
      {
       "file": "blib2to3/pgen2/tokenize.py",
       "line_start": 519,
-      "line_end": 525,
+      "line_end": 528,
       "category": "logic",
-      "severity": "high",
-      "confidence": 0.95,
-      "message": "Changing `if token in ('def', 'for'):` to `if token == 'def':` prevents `async` immediately preceding `for` (e.g. in async comprehensions such as `[x async for x in y]`) from being recognized and emitted as an `ASYNC` token. As a result, `async` will be emitted as a regular `NAME` token, causing a parse error when the grammar expects `ASYNC 'for'`.",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "When 'for' follows an 'async' token, `async_def` is not set to True, but the code still yields `ASYNC` followed by the `for` token. This results in misinterpreting an `async for` statement as a standard `async` definition state or causing subsequent logic to fail when encountering an async for loop.",
       "evidence": [
-       "if token == 'def':",
-       "async_def = True",
-       "async_def_indent = indents[-1]"
+       "if token in ('def', 'for'):",
+       "    if (stashed",
+       "            and stashed[0] == NAME",
+       "            and stashed[1] == 'async'):",
+       "        if token == 'def':",
+       "            async_def = True",
+       "            async_def_indent = indents[-1]",
+       "        yield (ASYNC, stashed[1], ...)"
       ],
-      "suggested_fix": "if token in ('def', 'for'):\n    if (stashed\n            and stashed[0] == NAME\n            and stashed[1] == 'async'):\n        if token == 'def':\n            async_def = True\n            async_def_indent = indents[-1]"
+      "suggested_fix": null
      }
     ],
-    "failed_nodes": [],
-    "retries": 1,
-    "hunk_splits": 0,
-    "dropped_findings": 0,
-    "llm_calls": 2
-   },
-   "clean": {
-    "summary": "",
-    "findings": [],
     "failed_nodes": [],
     "retries": 0,
     "hunk_splits": 0,
@@ -155,35 +147,90 @@
     "summary": "",
     "findings": [],
     "failed_nodes": [],
-    "retries": 1,
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 2
+    "llm_calls": 1
    },
    "clean": {
     "summary": "",
     "findings": [
      {
       "file": "black.py",
-      "line_start": 3123,
-      "line_end": 3130,
+      "line_start": 3157,
+      "line_end": 3161,
+      "category": "logic",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "first_leaf_column only checks direct children of the node and returns None if the first child is a Node rather than a Leaf, even if that child contains leaves at deeper levels. This will cause isinstance(child, Node) and first_leaf_column(child) == column to fail when comparing columns.",
+      "evidence": [
+       "def first_leaf_column(node: Node) -> Optional[int]:",
+       "    for child in node.children:",
+       "        if isinstance(child, Leaf):",
+       "            return child.column",
+       "    return None"
+      ],
+      "suggested_fix": null
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "black-3",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "black-4",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "black.py",
+      "line_start": 1483,
+      "line_end": 1483,
       "category": "logic",
       "severity": "high",
       "confidence": 0.95,
-      "message": "When `contains_fmt_on_at_column(container, leaf.column)` is True, `contains_fmt_on_at_column(child, leaf.column)` is invoked on each child. If `child` is a `Leaf`, line 3144 crashes with `AttributeError` because `Leaf` has no `children` attribute. Furthermore, even if `child` is a `Node`, `contains_fmt_on_at_column` inspects `child.children` rather than `child` itself, so `# fmt: on` on `child` is never detected. As a consequence, the loop does not return, and because `container = container.next_sibling` was placed in the `else` branch (line 3130), `container` is never advanced, resulting in an infinite `while` loop.",
+      "message": "Removing the check for `self.previous_line is None` causes `before` to be incorrectly decremented by `self.previous_after` even at the very beginning of a file, which can result in negative empty line counts or missing the protection against inserting empty lines at the start of the file.",
       "evidence": [
-       "if contains_fmt_on_at_column(container, leaf.column):",
-       "    for child in container.children:",
-       "        if contains_fmt_on_at_column(child, leaf.column):",
-       "            return",
-       "        yield child",
-       "else:",
-       "    yield container",
-       "    container = container.next_sibling"
+       "before -= self.previous_after"
       ],
-      "suggested_fix": "Check whether `child` itself has `# fmt: on` (e.g. using `fmt_on(child)` and verifying the column) rather than calling `contains_fmt_on_at_column(child, leaf.column)`. Ensure `container = container.next_sibling` is always executed if the `for` loop finishes without returning, or return when the matching child is reached."
+      "suggested_fix": "before = 0 if self.previous_line is None else before - self.previous_after"
      }
     ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
     "failed_nodes": [],
     "retries": 0,
     "hunk_splits": 0,
