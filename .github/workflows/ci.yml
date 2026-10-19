@@ -12,6 +12,7 @@ jobs:
   smoke-eval:
     needs: unit-tests
     runs-on: ubuntu-latest
+    if: env.GEMINI_API_KEY != ''
     env:
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
