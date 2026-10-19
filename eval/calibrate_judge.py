@@ -180,31 +180,40 @@ def run(prompt_version: str) -> None:
         f = p["finding"]
         verdict = judge(f, p["fix_patch"])
         hl = human_label(p)
-        human_labels.append(hl)
-        judge_labels.append(verdict.matches_root_cause)
+        is_error = verdict.reasoning.startswith("judge_error:")
+        
+        if not is_error:
+            human_labels.append(hl)
+            judge_labels.append(verdict.matches_root_cause)
+            status = "AGREE" if hl == verdict.matches_root_cause else "DISAGREE"
+        else:
+            status = "ERROR"
+
         log.append({
             "case_id": p["case_id"], "type": p["type"],
             "finding": f.message[:80],
-            "human": hl, "judge": verdict.matches_root_cause,
+            "human": hl, "judge": None if is_error else verdict.matches_root_cause,
+            "error": is_error,
             "reasoning": verdict.reasoning[:100],
         })
-        status = "AGREE" if hl == verdict.matches_root_cause else "DISAGREE"
         print(f"  [{i+1}/{len(pairs)}] {p['case_id']} ({p['type']}): {status}")
 
+    n_valid = len(human_labels)
     agreement = sum(h == j for h, j in zip(human_labels, judge_labels))
-    kappa = cohens_kappa(human_labels, judge_labels)
+    kappa = cohens_kappa(human_labels, judge_labels) if n_valid else None
 
     print(f"\n--- CALIBRATION: prompt={prompt_version}  judge={judge_model} ---")
-    print(f"Agreement : {agreement}/{len(pairs)} ({agreement/len(pairs)*100:.1f}%)")
+    print(f"Agreement : {agreement}/{n_valid} ({agreement/n_valid*100:.1f}%)" if n_valid else "Agreement : N/A")
     print(f"Kappa     : {kappa:.3f}" if kappa is not None else "Kappa: N/A")
-    print(f"Errors    : {judge.errors}")
+    print(f"Errors    : {judge.errors} (excluded from scoring)")
 
     report = {
         "prompt_version": prompt_version,
         "judge_model": judge_model,
         "n_pairs": len(pairs),
-        "agreement": f"{agreement}/{len(pairs)}",
-        "agreement_pct": round(agreement / len(pairs) * 100, 1),
+        "n_valid": n_valid,
+        "agreement": f"{agreement}/{n_valid}" if n_valid else None,
+        "agreement_pct": round(agreement / n_valid * 100, 1) if n_valid else None,
         "cohens_kappa": round(kappa, 3) if kappa is not None else None,
         "judge_errors": judge.errors,
         "pairs": log,

@@ -1,58 +1,60 @@
 {
  "summary": {
-  "n_buggy": 3,
-  "n_clean": 3,
+  "n_buggy": 5,
+  "n_clean": 5,
   "recall_lenient": {
    "k": 1,
-   "n": 3,
-   "pct": 33.333333333333336,
-   "ci_low": 6.14903152761605,
-   "ci_high": 79.23450448735122
+   "n": 5,
+   "pct": 20.0,
+   "ci_low": 3.6223160969787447,
+   "ci_high": 62.44717358814613
   },
   "recall_strict": {
-   "k": 0,
-   "n": 3,
-   "pct": 0.0,
-   "ci_low": 0.0,
-   "ci_high": 56.15060804490177
+   "k": 1,
+   "n": 5,
+   "pct": 20.0,
+   "ci_low": 3.6223160969787447,
+   "ci_high": 62.44717358814613
   },
   "by_stratum": {
    "modification": {
     "lenient": {
      "k": 1,
-     "n": 3,
-     "pct": 33.333333333333336,
-     "ci_low": 6.14903152761605,
-     "ci_high": 79.23450448735122
+     "n": 5,
+     "pct": 20.0,
+     "ci_low": 3.6223160969787447,
+     "ci_high": 62.44717358814613
     },
     "strict": {
-     "k": 0,
-     "n": 3,
-     "pct": 0.0,
-     "ci_low": 0.0,
-     "ci_high": 56.15060804490177
+     "k": 1,
+     "n": 5,
+     "pct": 20.0,
+     "ci_low": 3.6223160969787447,
+     "ci_high": 62.44717358814613
     }
    }
   },
   "fp_rate_clean": {
    "k": 0,
-   "n": 3,
+   "n": 5,
    "pct": 0.0,
    "ci_low": 0.0,
-   "ci_high": 56.15060804490177
+   "ci_high": 43.4491494752081
   },
-  "findings_per_clean_diff": 0.0,
+  "findings_per_clean_diff": 0.2,
   "precision_strict": {
-   "k": 0,
-   "n": 1,
-   "pct": 0.0,
-   "ci_low": 0.0,
-   "ci_high": 79.34567085261071
+   "k": 1,
+   "n": 2,
+   "pct": 50.0,
+   "ci_low": 9.452865480086615,
+   "ci_high": 90.54713451991339
   },
   "arm": "multicat_symbol",
-  "llm_calls": 40,
-  "retries": 34,
-  "failed_nodes": 4,
+  "reviewer_model": "gemini-3.5-flash-lite",
+  "judge_model": "minimax/minimax-m3.1-flash:free",
+  "llm_calls": 10,
+  "retries": 0,
+  "failed_nodes": 0,
   "hunk_splits": 0,
   "judge_errors": 0
  },
@@ -63,22 +65,20 @@
    "buggy": {
     "summary": "",
     "findings": [],
-    "failed_nodes": [
-     "multicat[0]"
-    ],
-    "retries": 7,
+    "failed_nodes": [],
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 8
+    "llm_calls": 1
    },
    "clean": {
     "summary": "",
     "findings": [],
     "failed_nodes": [],
-    "retries": 5,
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 6
+    "llm_calls": 1
    }
   },
   {
@@ -86,38 +86,21 @@
    "stratum": "modification",
    "buggy": {
     "summary": "",
-    "findings": [
-     {
-      "file": "blib2to3/pgen2/tokenize.py",
-      "line_start": 519,
-      "line_end": 528,
-      "category": "logic",
-      "severity": "high",
-      "confidence": 1.0,
-      "message": "The change restricts the promotion of the 'async' NAME token to an ASYNC keyword token to only occur when followed by 'def'. This breaks the parsing of 'async for' loops, which were previously handled. When the tokenizer encounters 'async for', it will now return 'async' as a NAME token instead of an ASYNC token, leading to a ParseError because the grammar expects an ASYNC token for asynchronous statements.",
-      "evidence": [
-       "-                     if token in ('def', 'for'):",
-       "+                     if token == 'def':"
-      ],
-      "suggested_fix": "Change the condition back to include 'for' (and also 'with', which is required for 'async with' statements): `if token in ('def', 'for', 'with'):`. The logic for setting `async_def` and `async_def_indent` should remain conditional on `token == 'def'`, but the `yield (ASYNC, ...)` must occur for all three keywords to correctly identify the 'async' keyword."
-     }
-    ],
+    "findings": [],
     "failed_nodes": [],
-    "retries": 1,
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 2
+    "llm_calls": 1
    },
    "clean": {
     "summary": "",
     "findings": [],
-    "failed_nodes": [
-     "multicat[0]"
-    ],
-    "retries": 7,
+    "failed_nodes": [],
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 8
+    "llm_calls": 1
    }
   },
   {
@@ -126,24 +109,103 @@
    "buggy": {
     "summary": "",
     "findings": [],
-    "failed_nodes": [
-     "multicat[0]"
-    ],
-    "retries": 7,
+    "failed_nodes": [],
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 8
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "black.py",
+      "line_start": 3157,
+      "line_end": 3161,
+      "category": "logic",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "first_leaf_column accepts a Node parameter but calls .children assuming it's a Node or has children, but if any child in a node is a Leaf without children or if a Leaf is passed where a Node is expected, AttributeError will be raised. Furthermore, if a Node's children all lack leaves or if it has no children, it returns None, which is then compared against an int column (e.g. `first_leaf_column(child) == column`), causing a type mismatch or TypeError in Python 3 when comparing int with None.",
+      "evidence": [
+       "def first_leaf_column(node: Node) -> Optional[int]:",
+       "    for child in node.children:",
+       "        if isinstance(child, Leaf):",
+       "            return child.column",
+       "    return None"
+      ],
+      "suggested_fix": null
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "black-3",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
    },
    "clean": {
     "summary": "",
     "findings": [],
-    "failed_nodes": [
-     "multicat[0]"
-    ],
-    "retries": 7,
+    "failed_nodes": [],
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 8
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "black-4",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "black.py",
+      "line_start": 1482,
+      "line_end": 1483,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 0.95,
+      "message": "Removing the check for `self.previous_line is None` causes `self.previous_after` to be subtracted from `before` even when `self.previous_line` is None (i.e., at the very beginning of the file). When `self.previous_after` is initialized to 0, this is a no-op, but if `self.previous_after` is non-zero (or if state leaks across files/runs), it can cause incorrect negative or reduced spacing at the start of the file, violating the invariant that Black should not insert empty lines at the beginning of the file.",
+      "evidence": [
+       "-         before = (",
+       "-             # Black should not insert empty lines at the beginning",
+       "-             # of the file",
+       "-             0",
+       "-             if self.previous_line is None",
+       "-             else before - self.previous_after",
+       "-         )",
+       "+         before -= self.previous_after"
+      ],
+      "suggested_fix": null
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
    }
   }
  ]

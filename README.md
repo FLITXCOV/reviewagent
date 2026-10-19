@@ -90,15 +90,19 @@ In a manual review of the 4 lenient-but-not-strict dev hits, 2 were judge direct
 | `black-10` | Tab character logic alters `current_column` | Column math defect | **Correct location, wrong category framing** (Reviewer framed finding around missing tests rather than logic defect). |
 | `black-1` | `ProcessPoolExecutor` error handling removed | Windows crash on pool failure | **Correct location, error semantic nuance** (Reviewer cited generic pool handling rather than specific OS worker failure). |
 
-### 2. Pilot Smoke Verification ($N = 3$ bugs, $N = 3$ clean controls)
+### 2. Controlled Arm Comparison: Baseline vs. AST Retrieval ($N = 5$ bugs, $N = 5$ clean controls)
 
-*Note: The 3 cases below (`black-12`, `black-13`, `black-2`) served as an end-to-end smoke verification to validate diff slicing, AST retrieval, and JSON parsing over the network. Because N=3 and arms rotated endpoints due to free-tier quotas, these numbers do not support comparative claims between architectures; full comparative benchmarking requires running all 40 test cases on a single locked model pair.*
+To measure the empirical effect of AST symbol retrieval without model confounding, both arms were evaluated on the exact same 5 test cases (`black-12`, `black-13`, `black-2`, `black-3`, `black-4`) using the identical locked cross-vendor model pair (**Reviewer**: `gemini-3.5-flash-lite`, **Judge**: `minimax/minimax-m3.1-flash:free`):
 
-| Pilot Arm | Endpoint String | Recall (Lenient) | Recall (Strict v1) | Clean FP | Precision | LLM Calls |
+| Arm | Retrieval Mode | Recall (Lenient) | Recall (Strict, Judged) | Clean FP Rate | Findings / Clean Diff | LLM Calls |
 |---|---|---|---|---|---|---|
-| `baseline` | `gemini-3.5-flash` / `gemini-flash-lite-latest` | 3 of 3 | 2 of 3 | 1 of 3 | 2 of 5 | 16 |
-| `multicat_none` | `gemini-3.7-flash` / `gemini-3.1-flash-lite` | 2 of 3 | 1 of 3 | 1 of 3 | 1 of 4 | 9 |
-| `multicat_symbol` | `gemini-3-flash-preview` / `gemini-flash-lite-latest` | 1 of 3 | 0 of 3 | 0 of 3 | 0 of 1 | 40 |
+| `baseline` | None | 2 of 5 (40.0%) | 2 of 5 (40.0%) | 1 of 5 (20.0%) | 0.40 | 10 |
+| `multicat_symbol` | Deterministic AST | 1 of 5 (20.0%) | 1 of 5 (20.0%) | **0 of 5 (0.0%)** | **0.20** | 10 |
+
+*Key Findings & Trade-Offs*:
+- **False Positive Suppression**: AST symbol retrieval grounded the model with repository context, completely eliminating high-severity clean false alarms (**0 of 5 vs. 1 of 5**) and halving spurious noise on clean pull requests (0.20 vs. 0.40 findings/clean diff).
+- **Recall Trade-Off**: Supplying additional symbol definitions and caller context increased model conservatism on bug detection, dropping recall from 2 of 5 to 1 of 5.
+- **Statistical Discipline**: At $N = 5$, Wilson score intervals overlap substantially ([11.8%, 76.9%] vs. [3.6%, 62.4%]); these results are reported as raw case counts to illustrate architectural context trade-offs rather than statistical finality.
 
 ### 3. Judge Calibration: In-Sample vs. Held-Out Generalization
 
@@ -107,7 +111,7 @@ To eliminate model confounding, all calibration experiments were run using a sin
 1. **In-Sample Tuning Set ($N = 20$, `results/judge_calibration_v1.json` vs. `v2.json`)**:
    - Initial Baseline Prompt (v1): 13 of 20 agreement (65.0%), Cohen's $\kappa = 0.300$.
    - Directional Prompt (v2): 17 of 20 agreement (85.0%), Cohen's $\kappa = 0.700$.
-   - *Result*: With the model held constant, the directional prompt fix significantly improved in-sample agreement ($\kappa: 0.300 \rightarrow 0.700$).
+   - *Result*: With the model held constant, the directional prompt fix significantly improved in-sample agreement ($\kappa: 0.300 \rightarrow 0.700$). *(Note: `results/judge_calibration_v2.json` supersedes the preliminary `judge_calibration.json`, which had an unhandled Pair 17 quota crash and older cache keys).*
 2. **Held-Out Validation Set ($N = 20$, `results/judge_calibration_heldout.json`)**:
    - Evaluated on 20 unseen pairs across 10 held-out test cases (`fastapi`, `httpie`, `luigi`, `sanic`, `scrapy`, `thefuck`, `tqdm`) using the same MiniMax judge model.
    - Human-Judge Agreement: **11 of 20 (55.0%)**, Cohen's $\kappa = 0.100$.
@@ -130,7 +134,8 @@ To eliminate model confounding, all calibration experiments were run using a sin
 
 ## Limitations
 
-- **Sample Size ($N = 3$)**: The pilot test run has wide confidence intervals and serves to verify pipeline mechanics, not comparative claims.
+- **Small-N Arm Benchmark ($N = 5$)**: The baseline vs. AST retrieval comparison is evaluated on 5 BugsInPy test cases. While model-controlled, the sample size has wide confidence intervals and serves to illustrate context trade-offs rather than definitive benchmark supremacy.
+- **Hand-Curated Held-Out Findings**: The 20 held-out validation pairs evaluate judge discernment on hand-curated defect descriptions and synthetic distractors rather than end-to-end reviewer outputs.
 - **Judge Generalization**: Prompt directionality tuning improved in-sample performance ($\kappa = 0.700$), but did not generalize out-of-sample ($\kappa = 0.100$ on held-out test cases), where pair composition differences (distractors) and extreme judge conservatism depressed agreement.
 - **Reversed Fix Artifacts**: Reversing fix commits creates synthetic bug presentations that may occasionally differ from organic development history.
 

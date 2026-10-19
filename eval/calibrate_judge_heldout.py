@@ -229,25 +229,33 @@ judge_labels = []
 
 for i, p in enumerate(heldout_pairs):
     v = judge(p["finding"], p["fix_patch"])
-    match = v.matches_root_cause
     expected = p["expected"]
-    human_labels.append(expected)
-    judge_labels.append(match)
+    is_error = v.reasoning.startswith("judge_error:")
+    match = None if is_error else v.matches_root_cause
+
+    if not is_error:
+        human_labels.append(expected)
+        judge_labels.append(match)
+        status = "AGREE" if expected == match else "DISAGREE"
+    else:
+        status = "ERROR"
+
     results.append({
         "case_id": p["case_id"],
         "type": p["type"],
         "human_ground_truth": expected,
         "judge_prediction": match,
-        "agreement": expected == match,
+        "error": is_error,
+        "agreement": (expected == match) if not is_error else None,
         "finding_message": p["finding"].message,
         "judge_reasoning": v.reasoning
     })
-    status = "AGREE" if expected == match else "DISAGREE"
     print(f"[{i+1}/{len(heldout_pairs)}] {p['case_id']} ({p['type']}): {status} (human={expected}, judge={match})")
 
+n_valid = len(human_labels)
 agreement_count = sum(h == j for h, j in zip(human_labels, judge_labels))
-agreement_pct = round(agreement_count / len(heldout_pairs) * 100, 1)
-kappa = cohens_kappa(human_labels, judge_labels)
+agreement_pct = round(agreement_count / n_valid * 100, 1) if n_valid else None
+kappa = cohens_kappa(human_labels, judge_labels) if n_valid else None
 
 # Compute error breakdown
 false_rejects = sum(1 for h, j in zip(human_labels, judge_labels) if h is True and j is False)
