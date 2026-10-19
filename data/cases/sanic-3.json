@@ -1,0 +1,30 @@
+{
+ "case_id": "sanic-3",
+ "project": "sanic",
+ "bug_id": 3,
+ "split": "test",
+ "file": "sanic/app.py",
+ "buggy_commit": "91f6abaa81248189fbcbdf685e8bdcbb7846609f",
+ "fixed_commit": "861e87347a2d373d6ffa387965a6887c83af632c",
+ "buggy_diff": "diff --git a/sanic/app.py b/sanic/app.py\nindex d12dc59b..abdd36fb 100644\n--- a/sanic/app.py\n+++ b/sanic/app.py\n@@ -830,14 +830,6 @@ class Sanic:\n                 \"Endpoint with name `{}` was not found\".format(view_name)\n             )\n \n-        # If the route has host defined, split that off\n-        # TODO: Retain netloc and path separately in Route objects\n-        host = uri.find(\"/\")\n-        if host > 0:\n-            host, uri = uri[:host], uri[host:]\n-        else:\n-            host = None\n-\n         if view_name == \"static\" or view_name.endswith(\".static\"):\n             filename = kwargs.pop(\"filename\", None)\n             # it's static folder\n@@ -870,7 +862,7 @@ class Sanic:\n \n         netloc = kwargs.pop(\"_server\", None)\n         if netloc is None and external:\n-            netloc = host or self.config.get(\"SERVER_NAME\", \"\")\n+            netloc = self.config.get(\"SERVER_NAME\", \"\")\n \n         if external:\n             if not scheme:\n",
+ "clean_diff": "diff --git a/sanic/app.py b/sanic/app.py\nindex abdd36fb..d12dc59b 100644\n--- a/sanic/app.py\n+++ b/sanic/app.py\n@@ -830,6 +830,14 @@ class Sanic:\n                 \"Endpoint with name `{}` was not found\".format(view_name)\n             )\n \n+        # If the route has host defined, split that off\n+        # TODO: Retain netloc and path separately in Route objects\n+        host = uri.find(\"/\")\n+        if host > 0:\n+            host, uri = uri[:host], uri[host:]\n+        else:\n+            host = None\n+\n         if view_name == \"static\" or view_name.endswith(\".static\"):\n             filename = kwargs.pop(\"filename\", None)\n             # it's static folder\n@@ -862,7 +870,7 @@ class Sanic:\n \n         netloc = kwargs.pop(\"_server\", None)\n         if netloc is None and external:\n-            netloc = self.config.get(\"SERVER_NAME\", \"\")\n+            netloc = host or self.config.get(\"SERVER_NAME\", \"\")\n \n         if external:\n             if not scheme:\n",
+ "fix_patch": "diff --git a/sanic/app.py b/sanic/app.py\nindex abdd36fb..d12dc59b 100644\n--- a/sanic/app.py\n+++ b/sanic/app.py\n@@ -830,6 +830,14 @@ class Sanic:\n                 \"Endpoint with name `{}` was not found\".format(view_name)\n             )\n \n+        # If the route has host defined, split that off\n+        # TODO: Retain netloc and path separately in Route objects\n+        host = uri.find(\"/\")\n+        if host > 0:\n+            host, uri = uri[:host], uri[host:]\n+        else:\n+            host = None\n+\n         if view_name == \"static\" or view_name.endswith(\".static\"):\n             filename = kwargs.pop(\"filename\", None)\n             # it's static folder\n@@ -862,7 +870,7 @@ class Sanic:\n \n         netloc = kwargs.pop(\"_server\", None)\n         if netloc is None and external:\n-            netloc = self.config.get(\"SERVER_NAME\", \"\")\n+            netloc = host or self.config.get(\"SERVER_NAME\", \"\")\n \n         if external:\n             if not scheme:\n",
+ "spans": [
+  [
+   832,
+   833
+  ],
+  [
+   865,
+   865
+  ]
+ ],
+ "enclosing": [
+  [
+   798,
+   925
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

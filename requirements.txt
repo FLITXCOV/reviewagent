@@ -1,0 +1,3 @@
+pydantic>=2
+pytest
+# provider SDKs: add the ones you use in providers.py (verify current package names/versions in their docs)

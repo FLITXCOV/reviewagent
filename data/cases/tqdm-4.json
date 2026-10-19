@@ -1,0 +1,26 @@
+{
+ "case_id": "tqdm-4",
+ "project": "tqdm",
+ "bug_id": 4,
+ "split": "dev",
+ "file": "tqdm/_tqdm.py",
+ "buggy_commit": "03b347646492131d889871939b40457d29147216",
+ "fixed_commit": "964dee631d0ed30e2f799b42fc58ba5e73795a08",
+ "buggy_diff": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex ea58409..df6414e 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -320,8 +320,7 @@ class tqdm(Comparable):\n \n         # apply custom scale if necessary\n         if unit_scale and unit_scale not in (True, 1):\n-            if total:\n-                total *= unit_scale\n+            total *= unit_scale\n             n *= unit_scale\n             if rate:\n                 rate *= unit_scale  # by default rate = 1 / self.avg_time\n",
+ "clean_diff": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex df6414e..ea58409 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -320,7 +320,8 @@ class tqdm(Comparable):\n \n         # apply custom scale if necessary\n         if unit_scale and unit_scale not in (True, 1):\n-            total *= unit_scale\n+            if total:\n+                total *= unit_scale\n             n *= unit_scale\n             if rate:\n                 rate *= unit_scale  # by default rate = 1 / self.avg_time\n",
+ "fix_patch": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex df6414e..ea58409 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -320,7 +320,8 @@ class tqdm(Comparable):\n \n         # apply custom scale if necessary\n         if unit_scale and unit_scale not in (True, 1):\n-            total *= unit_scale\n+            if total:\n+                total *= unit_scale\n             n *= unit_scale\n             if rate:\n                 rate *= unit_scale  # by default rate = 1 / self.avg_time\n",
+ "spans": [
+  [
+   323,
+   323
+  ]
+ ],
+ "enclosing": [
+  [
+   252,
+   451
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

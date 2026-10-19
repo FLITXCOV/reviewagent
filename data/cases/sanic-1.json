@@ -1,0 +1,26 @@
+{
+ "case_id": "sanic-1",
+ "project": "sanic",
+ "bug_id": 1,
+ "split": "dev",
+ "file": "sanic/app.py",
+ "buggy_commit": "e7001b00747b659f7042b0534802b936ee8a53e0",
+ "fixed_commit": "44973125c15304b4262c51c78b5a86bd1daafa86",
+ "buggy_diff": "diff --git a/sanic/app.py b/sanic/app.py\nindex 7ef1c942..6d7f2daf 100644\n--- a/sanic/app.py\n+++ b/sanic/app.py\n@@ -653,7 +653,7 @@ class Sanic:\n                 if _rn not in self.named_response_middleware:\n                     self.named_response_middleware[_rn] = deque()\n                 if middleware not in self.named_response_middleware[_rn]:\n-                    self.named_response_middleware[_rn].appendleft(middleware)\n+                    self.named_response_middleware[_rn].append(middleware)\n \n     # Decorator\n     def middleware(self, middleware_or_request):\n",
+ "clean_diff": "diff --git a/sanic/app.py b/sanic/app.py\nindex 6d7f2daf..7ef1c942 100644\n--- a/sanic/app.py\n+++ b/sanic/app.py\n@@ -653,7 +653,7 @@ class Sanic:\n                 if _rn not in self.named_response_middleware:\n                     self.named_response_middleware[_rn] = deque()\n                 if middleware not in self.named_response_middleware[_rn]:\n-                    self.named_response_middleware[_rn].append(middleware)\n+                    self.named_response_middleware[_rn].appendleft(middleware)\n \n     # Decorator\n     def middleware(self, middleware_or_request):\n",
+ "fix_patch": "diff --git a/sanic/app.py b/sanic/app.py\nindex 6d7f2daf..7ef1c942 100644\n--- a/sanic/app.py\n+++ b/sanic/app.py\n@@ -653,7 +653,7 @@ class Sanic:\n                 if _rn not in self.named_response_middleware:\n                     self.named_response_middleware[_rn] = deque()\n                 if middleware not in self.named_response_middleware[_rn]:\n-                    self.named_response_middleware[_rn].append(middleware)\n+                    self.named_response_middleware[_rn].appendleft(middleware)\n \n     # Decorator\n     def middleware(self, middleware_or_request):\n",
+ "spans": [
+  [
+   656,
+   656
+  ]
+ ],
+ "enclosing": [
+  [
+   642,
+   656
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

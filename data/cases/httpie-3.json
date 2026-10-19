@@ -1,0 +1,26 @@
+{
+ "case_id": "httpie-3",
+ "project": "httpie",
+ "bug_id": 3,
+ "split": "test",
+ "file": "httpie/sessions.py",
+ "buggy_commit": "8c33e5e3d31d3cd6476c4d9bc963a4c529f883d2",
+ "fixed_commit": "589887939507ff26d36ec74bd2c045819cfa3d56",
+ "buggy_diff": "diff --git a/httpie/sessions.py b/httpie/sessions.py\nindex 32254bf..e61a8e3 100644\n--- a/httpie/sessions.py\n+++ b/httpie/sessions.py\n@@ -101,10 +101,6 @@ class Session(BaseConfigDict):\n \n         \"\"\"\n         for name, value in request_headers.items():\n-\n-            if value is None:\n-                continue  # Ignore explicitely unset headers\n-\n             value = value.decode('utf8')\n             if name == 'User-Agent' and value.startswith('HTTPie/'):\n                 continue\n",
+ "clean_diff": "diff --git a/httpie/sessions.py b/httpie/sessions.py\nindex e61a8e3..32254bf 100644\n--- a/httpie/sessions.py\n+++ b/httpie/sessions.py\n@@ -101,6 +101,10 @@ class Session(BaseConfigDict):\n \n         \"\"\"\n         for name, value in request_headers.items():\n+\n+            if value is None:\n+                continue  # Ignore explicitely unset headers\n+\n             value = value.decode('utf8')\n             if name == 'User-Agent' and value.startswith('HTTPie/'):\n                 continue\n",
+ "fix_patch": "diff --git a/httpie/sessions.py b/httpie/sessions.py\nindex e61a8e3..32254bf 100644\n--- a/httpie/sessions.py\n+++ b/httpie/sessions.py\n@@ -101,6 +101,10 @@ class Session(BaseConfigDict):\n \n         \"\"\"\n         for name, value in request_headers.items():\n+\n+            if value is None:\n+                continue  # Ignore explicitely unset headers\n+\n             value = value.decode('utf8')\n             if name == 'User-Agent' and value.startswith('HTTPie/'):\n                 continue\n",
+ "spans": [
+  [
+   103,
+   104
+  ]
+ ],
+ "enclosing": [
+  [
+   95,
+   112
+  ]
+ ],
+ "stratum": "deletion_only",
+ "fix_matches_dataset_patch": true
+}

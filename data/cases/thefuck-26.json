@@ -1,0 +1,30 @@
+{
+ "case_id": "thefuck-26",
+ "project": "thefuck",
+ "bug_id": 26,
+ "split": "test",
+ "file": "thefuck/rules/vagrant_up.py",
+ "buggy_commit": "7cb0388ed0845545e878b29783bbf8e901a02745",
+ "fixed_commit": "feb3eee2a08f0cba4552373d728509bc90b561ab",
+ "buggy_diff": "diff --git a/thefuck/rules/vagrant_up.py b/thefuck/rules/vagrant_up.py\nindex 9c0a1e4..1c27db4 100644\n--- a/thefuck/rules/vagrant_up.py\n+++ b/thefuck/rules/vagrant_up.py\n@@ -7,12 +7,7 @@ def match(command, settings):\n \n def get_new_command(command, settings):\n     cmds = command.script.split(' ')\n-    machine = None\n+    machine = \"\"\n     if len(cmds) >= 3:\n         machine = cmds[2]\n-\n-    startAllInstances = shells.and_(\"vagrant up\", command.script)\n-    if machine is None: \n-        return startAllInstances\n-    else:\n-        return [ shells.and_(\"vagrant up \" +  machine, command.script), startAllInstances]\n+    return shells.and_(\"vagrant up \" +  machine, command.script)\n",
+ "clean_diff": "diff --git a/thefuck/rules/vagrant_up.py b/thefuck/rules/vagrant_up.py\nindex 1c27db4..9c0a1e4 100644\n--- a/thefuck/rules/vagrant_up.py\n+++ b/thefuck/rules/vagrant_up.py\n@@ -7,7 +7,12 @@ def match(command, settings):\n \n def get_new_command(command, settings):\n     cmds = command.script.split(' ')\n-    machine = \"\"\n+    machine = None\n     if len(cmds) >= 3:\n         machine = cmds[2]\n-    return shells.and_(\"vagrant up \" +  machine, command.script)\n+\n+    startAllInstances = shells.and_(\"vagrant up\", command.script)\n+    if machine is None: \n+        return startAllInstances\n+    else:\n+        return [ shells.and_(\"vagrant up \" +  machine, command.script), startAllInstances]\n",
+ "fix_patch": "diff --git a/thefuck/rules/vagrant_up.py b/thefuck/rules/vagrant_up.py\nindex 1c27db4..9c0a1e4 100644\n--- a/thefuck/rules/vagrant_up.py\n+++ b/thefuck/rules/vagrant_up.py\n@@ -7,7 +7,12 @@ def match(command, settings):\n \n def get_new_command(command, settings):\n     cmds = command.script.split(' ')\n-    machine = \"\"\n+    machine = None\n     if len(cmds) >= 3:\n         machine = cmds[2]\n-    return shells.and_(\"vagrant up \" +  machine, command.script)\n+\n+    startAllInstances = shells.and_(\"vagrant up\", command.script)\n+    if machine is None: \n+        return startAllInstances\n+    else:\n+        return [ shells.and_(\"vagrant up \" +  machine, command.script), startAllInstances]\n",
+ "spans": [
+  [
+   10,
+   10
+  ],
+  [
+   13,
+   13
+  ]
+ ],
+ "enclosing": [
+  [
+   8,
+   13
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

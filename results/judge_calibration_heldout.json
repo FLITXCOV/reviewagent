@@ -1,0 +1,194 @@
+{
+  "evaluation": "held_out_validation",
+  "dataset": "BugsInPy_test_cases",
+  "judge_model": "minimax/minimax-m3.1-flash:free",
+  "prompt_version": "v2_directional",
+  "n_pairs": 20,
+  "agreement_count": 11,
+  "agreement_pct": 55.0,
+  "cohens_kappa": 0.1,
+  "false_rejections": 9,
+  "false_accepts": 0,
+  "pairs": [
+    {
+      "case_id": "fastapi-10",
+      "type": "true_defect",
+      "human_ground_truth": true,
+      "judge_prediction": false,
+      "agreement": false,
+      "finding_message": "The unique_id generation fails to account for endpoint function names when duplicate routes exist, causing collision in generated API operation IDs.",
+      "judge_reasoning": "The patch fixes response serialization with Pydantic default skipping, while the finding concerns operation ID generation for duplicate routes and is unrelated."
+    },
+    {
+      "case_id": "fastapi-11",
+      "type": "true_defect",
+      "human_ground_truth": true,
+      "judge_prediction": true,
+      "agreement": true,
+      "finding_message": "Request body parameters are not correctly extracted when dependencies use custom sub-models without explicit embed=True.",
+      "judge_reasoning": "The patch recursively rejects fields containing non-scalar sub-models as scalar, fixing incorrect request-body extraction for custom sub-models without explicit embed=True."
+    },
+    {
+      "case_id": "httpie-3",
+      "type": "true_defect",
+      "human_ground_truth": true,
+      "judge_prediction": false,
+      "agreement": false,
+      "finding_message": "Default headers in session are overwritten instead of merged, losing user-configured Authorization header on redirect.",
+      "judge_reasoning": "The patch prevents None-valued session headers from being decoded by skipping them, whereas the finding concerns header merging and loss of an Authorization header during redirects."
+    },
+    {
+      "case_id": "httpie-5",
+      "type": "true_defect",
+      "human_ground_truth": true,
+      "judge_prediction": false,
+      "agreement": false,
+      "finding_message": "Missing check for None auth_plugin when resolving authentication method raises AttributeError during plugin dispatch.",
+      "judge_reasoning": "The patch fixes parsing of escaped key-value separators, while the finding concerns a missing None check for an authentication plugin, which is unrelated."
+    },
+    {
+      "case_id": "luigi-10",
+      "type": "true_defect",
+      "human_ground_truth": true,
+      "judge_prediction": false,
+      "agreement": false,
+      "finding_message": "Task complete check raises unhandled exception when target file system is temporarily unreachable instead of retrying.",
+      "judge_reasoning": "The patch filters pending tasks by worker assignment, whereas the finding concerns an unhandled filesystem exception during task-completion checking, so they address different root causes."
+    },
+    {
+      "case_id": "luigi-17",
+      "type": "true_defect",
+      "human_ground_truth": true,
+      "judge_prediction": false,
+      "agreement": false,
+      "finding_message": "Yielding tasks in run() method does not update upstream dependency graph properly, causing premature downstream execution.",
+      "judge_reasoning": "The patch disables task-history recording in CentralPlannerScheduler, while the finding concerns task yielding and upstream dependency-graph updates, which the patch does not address."
+    },
+    {
+      "case_id": "sanic-2",
+      "type": "true_defect",
+      "human_ground_truth": true,
+      "judge_prediction": false,
+      "agreement": false,
+      "finding_message": "Streaming response fails to handle client disconnect mid-stream, leaking socket file descriptor and worker tasks.",
+      "judge_reasoning": "The patch adds compatibility wrappers for asyncio/uvloop server start_serving and serve_forever methods, while the finding concerns client disconnects during streaming responses and resource leaks, which is a different defect."
+    },
+    {
+      "case_id": "scrapy-10",
+      "type": "true_defect",
+      "human_ground_truth": true,
+      "judge_prediction": false,
+      "agreement": false,
+      "finding_message": "CookieJar ignores domain attribute when port is specified in URL, failing to attach cookies to subsequent requests.",
+      "judge_reasoning": "The patch fixes unsafe redirect URL decoding with safe_url_string, while the finding concerns CookieJar domain and port handling, which is unrelated."
+    },
+    {
+      "case_id": "thefuck-2",
+      "type": "true_defect",
+      "human_ground_truth": true,
+      "judge_prediction": false,
+      "agreement": false,
+      "finding_message": "Rule crashes with IndexError when git push error output does not contain expected upstream branch suggestion line.",
+      "judge_reasoning": "The fix changes PATH parsing to use os.pathsep, while the finding concerns an unrelated IndexError caused by missing upstream branch text in git push output."
+    },
+    {
+      "case_id": "tqdm-1",
+      "type": "true_defect",
+      "human_ground_truth": true,
+      "judge_prediction": false,
+      "agreement": false,
+      "finding_message": "Nested progress bar line offset calculation overwrites parent bar when nrows is not explicitly specified.",
+      "judge_reasoning": "The patch fixes tenumerate by applying its start argument to enumerate rather than the wrapped progress bar, while the finding concerns nested progress-bar row-offset handling."
+    },
+    {
+      "case_id": "fastapi-10",
+      "type": "clean_control_false_alarm",
+      "human_ground_truth": false,
+      "judge_prediction": false,
+      "agreement": true,
+      "finding_message": "Potential timing attack vulnerability in route string hashing comparison.",
+      "judge_reasoning": "The patch fixes default values not being skipped when serializing BaseModel responses, while the finding concerns an unrelated potential timing attack in route string comparison."
+    },
+    {
+      "case_id": "httpie-3",
+      "type": "clean_control_false_alarm",
+      "human_ground_truth": false,
+      "judge_prediction": false,
+      "agreement": true,
+      "finding_message": "Headers dictionary might be mutated concurrently by background async threads.",
+      "judge_reasoning": "The patch fixes a TypeError when a header value is None, while the finding concerns possible concurrent mutation of the headers dictionary."
+    },
+    {
+      "case_id": "luigi-10",
+      "type": "clean_control_false_alarm",
+      "human_ground_truth": false,
+      "judge_prediction": false,
+      "agreement": true,
+      "finding_message": "Insecure file permissions when creating target directory.",
+      "judge_reasoning": "The patch filters pending tasks by worker assignment, whereas the finding concerns insecure target-directory file permissions and is unrelated."
+    },
+    {
+      "case_id": "sanic-2",
+      "type": "clean_control_false_alarm",
+      "human_ground_truth": false,
+      "judge_prediction": false,
+      "agreement": true,
+      "finding_message": "Streaming buffer size should use a configurable constant rather than default 4096.",
+      "judge_reasoning": "The patch adds compatibility wrappers for start_serving and serve_forever, while the finding concerns the configurable streaming buffer size and is unrelated."
+    },
+    {
+      "case_id": "thefuck-2",
+      "type": "clean_control_false_alarm",
+      "human_ground_truth": false,
+      "judge_prediction": false,
+      "agreement": true,
+      "finding_message": "Regex compilation should be cached at module level for micro-optimization.",
+      "judge_reasoning": "The patch fixes platform-specific PATH parsing by using os.pathsep, while the finding only suggests caching regex compilation and is unrelated."
+    },
+    {
+      "case_id": "tqdm-1",
+      "type": "clean_control_false_alarm",
+      "human_ground_truth": false,
+      "judge_prediction": false,
+      "agreement": true,
+      "finding_message": "ANSI terminal escape sequences may fail on ancient non-VT100 serial teletype consoles.",
+      "judge_reasoning": "The patch fixes the `start` argument being passed to `tqdm` instead of `enumerate`, while the finding concerns ANSI terminal compatibility on ancient consoles."
+    },
+    {
+      "case_id": "fastapi-11",
+      "type": "wrong_defect_distractor",
+      "human_ground_truth": false,
+      "judge_prediction": false,
+      "agreement": true,
+      "finding_message": "SQL injection vulnerability in query parameter parser.",
+      "judge_reasoning": "The patch fixes scalar-field classification by recursively validating subfields, while the finding alleges an unrelated SQL injection vulnerability in query parameter parsing."
+    },
+    {
+      "case_id": "httpie-5",
+      "type": "wrong_defect_distractor",
+      "human_ground_truth": false,
+      "judge_prediction": false,
+      "agreement": true,
+      "finding_message": "Hardcoded API keys exposed in plain text inside auth handler.",
+      "judge_reasoning": "The finding alleges hardcoded API keys in an auth handler, while the patch fixes separator parsing and escaped-separator handling in KeyValueType, so the root causes are unrelated."
+    },
+    {
+      "case_id": "luigi-17",
+      "type": "wrong_defect_distractor",
+      "human_ground_truth": false,
+      "judge_prediction": false,
+      "agreement": true,
+      "finding_message": "Off-by-one error in batch size pagination counter.",
+      "judge_reasoning": "The patch disables task-history recording in CentralPlannerScheduler, while the finding alleges an unrelated off-by-one error in batch-size pagination."
+    },
+    {
+      "case_id": "scrapy-10",
+      "type": "wrong_defect_distractor",
+      "human_ground_truth": false,
+      "judge_prediction": false,
+      "agreement": true,
+      "finding_message": "Memory leak caused by circular reference in spider middleware pipeline.",
+      "judge_reasoning": "The patch fixes URL decoding/normalization in redirect handling, while the finding describes an unrelated circular-reference memory leak in the middleware pipeline."
+    }
+  ]
+}

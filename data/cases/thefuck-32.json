@@ -1,0 +1,26 @@
+{
+ "case_id": "thefuck-32",
+ "project": "thefuck",
+ "bug_id": 32,
+ "split": "test",
+ "file": "thefuck/rules/ls_lah.py",
+ "buggy_commit": "cb33c912e5f2f4c2da6b70d708ff0437bfcd3b94",
+ "fixed_commit": "25cc98a21a3450a046caf418f08713c82a290805",
+ "buggy_diff": "diff --git a/thefuck/rules/ls_lah.py b/thefuck/rules/ls_lah.py\nindex 70f6baa..7eba5bd 100644\n--- a/thefuck/rules/ls_lah.py\n+++ b/thefuck/rules/ls_lah.py\n@@ -1,7 +1,5 @@\n def match(command, settings):\n-    return (command.script == 'ls'\n-            or command.script.startswith('ls ')\n-            and not ('ls -' in command.script))\n+    return 'ls' in command.script and not ('ls -' in command.script)\n \n \n def get_new_command(command, settings):\n",
+ "clean_diff": "diff --git a/thefuck/rules/ls_lah.py b/thefuck/rules/ls_lah.py\nindex 7eba5bd..70f6baa 100644\n--- a/thefuck/rules/ls_lah.py\n+++ b/thefuck/rules/ls_lah.py\n@@ -1,5 +1,7 @@\n def match(command, settings):\n-    return 'ls' in command.script and not ('ls -' in command.script)\n+    return (command.script == 'ls'\n+            or command.script.startswith('ls ')\n+            and not ('ls -' in command.script))\n \n \n def get_new_command(command, settings):\n",
+ "fix_patch": "diff --git a/thefuck/rules/ls_lah.py b/thefuck/rules/ls_lah.py\nindex 7eba5bd..70f6baa 100644\n--- a/thefuck/rules/ls_lah.py\n+++ b/thefuck/rules/ls_lah.py\n@@ -1,5 +1,7 @@\n def match(command, settings):\n-    return 'ls' in command.script and not ('ls -' in command.script)\n+    return (command.script == 'ls'\n+            or command.script.startswith('ls ')\n+            and not ('ls -' in command.script))\n \n \n def get_new_command(command, settings):\n",
+ "spans": [
+  [
+   2,
+   2
+  ]
+ ],
+ "enclosing": [
+  [
+   1,
+   2
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

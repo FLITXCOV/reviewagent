@@ -1,0 +1,26 @@
+{
+ "case_id": "luigi-10",
+ "project": "luigi",
+ "bug_id": 10,
+ "split": "test",
+ "file": "luigi/scheduler.py",
+ "buggy_commit": "f538d1b3d473d542a19d508e5f7e0809b1dfe5ef",
+ "fixed_commit": "3c55acd2cd5cf9c6c760bec5bb3159e0bc48a614",
+ "buggy_diff": "diff --git a/luigi/scheduler.py b/luigi/scheduler.py\nindex 6cc4b87f..16b203b1 100644\n--- a/luigi/scheduler.py\n+++ b/luigi/scheduler.py\n@@ -302,7 +302,7 @@ class Worker(object):\n             return six.moves.filter(lambda task: task.status in [PENDING, RUNNING],\n                                     self.tasks)\n         else:\n-            return six.moves.filter(lambda task: self.id in task.workers, state.get_pending_tasks())\n+            return state.get_pending_tasks()\n \n     def is_trivial_worker(self, state):\n         \"\"\"\n",
+ "clean_diff": "diff --git a/luigi/scheduler.py b/luigi/scheduler.py\nindex 16b203b1..6cc4b87f 100644\n--- a/luigi/scheduler.py\n+++ b/luigi/scheduler.py\n@@ -302,7 +302,7 @@ class Worker(object):\n             return six.moves.filter(lambda task: task.status in [PENDING, RUNNING],\n                                     self.tasks)\n         else:\n-            return state.get_pending_tasks()\n+            return six.moves.filter(lambda task: self.id in task.workers, state.get_pending_tasks())\n \n     def is_trivial_worker(self, state):\n         \"\"\"\n",
+ "fix_patch": "diff --git a/luigi/scheduler.py b/luigi/scheduler.py\nindex 16b203b1..6cc4b87f 100644\n--- a/luigi/scheduler.py\n+++ b/luigi/scheduler.py\n@@ -302,7 +302,7 @@ class Worker(object):\n             return six.moves.filter(lambda task: task.status in [PENDING, RUNNING],\n                                     self.tasks)\n         else:\n-            return state.get_pending_tasks()\n+            return six.moves.filter(lambda task: self.id in task.workers, state.get_pending_tasks())\n \n     def is_trivial_worker(self, state):\n         \"\"\"\n",
+ "spans": [
+  [
+   305,
+   305
+  ]
+ ],
+ "enclosing": [
+  [
+   295,
+   305
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

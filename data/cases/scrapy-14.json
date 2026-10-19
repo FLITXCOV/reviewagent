@@ -1,0 +1,34 @@
+{
+ "case_id": "scrapy-14",
+ "project": "scrapy",
+ "bug_id": 14,
+ "split": "test",
+ "file": "scrapy/utils/gz.py",
+ "buggy_commit": "b7553d921afe356ec858bb1d2e5b1702df05ea24",
+ "fixed_commit": "d43a35735a062a4260b002cfbcd3236c77ef9399",
+ "buggy_diff": "diff --git a/scrapy/utils/gz.py b/scrapy/utils/gz.py\nindex cfb652143..d035f9fdf 100644\n--- a/scrapy/utils/gz.py\n+++ b/scrapy/utils/gz.py\n@@ -7,7 +7,7 @@ except ImportError:\n from gzip import GzipFile\n \n import six\n-import re\n+\n \n # - Python>=3.5 GzipFile's read() has issues returning leftover\n #   uncompressed data when input is corrupted\n@@ -50,9 +50,8 @@ def gunzip(data):\n                 raise\n     return output\n \n-_is_gzipped_re = re.compile(br'^application/(x-)?gzip\\b', re.I)\n \n def is_gzipped(response):\n     \"\"\"Return True if the response is gzipped, or False otherwise\"\"\"\n     ctype = response.headers.get('Content-Type', b'')\n-    return _is_gzipped_re.search(ctype) is not None\n+    return ctype in (b'application/x-gzip', b'application/gzip')\n",
+ "clean_diff": "diff --git a/scrapy/utils/gz.py b/scrapy/utils/gz.py\nindex d035f9fdf..cfb652143 100644\n--- a/scrapy/utils/gz.py\n+++ b/scrapy/utils/gz.py\n@@ -7,7 +7,7 @@ except ImportError:\n from gzip import GzipFile\n \n import six\n-\n+import re\n \n # - Python>=3.5 GzipFile's read() has issues returning leftover\n #   uncompressed data when input is corrupted\n@@ -50,8 +50,9 @@ def gunzip(data):\n                 raise\n     return output\n \n+_is_gzipped_re = re.compile(br'^application/(x-)?gzip\\b', re.I)\n \n def is_gzipped(response):\n     \"\"\"Return True if the response is gzipped, or False otherwise\"\"\"\n     ctype = response.headers.get('Content-Type', b'')\n-    return ctype in (b'application/x-gzip', b'application/gzip')\n+    return _is_gzipped_re.search(ctype) is not None\n",
+ "fix_patch": "diff --git a/scrapy/utils/gz.py b/scrapy/utils/gz.py\nindex d035f9fdf..cfb652143 100644\n--- a/scrapy/utils/gz.py\n+++ b/scrapy/utils/gz.py\n@@ -7,7 +7,7 @@ except ImportError:\n from gzip import GzipFile\n \n import six\n-\n+import re\n \n # - Python>=3.5 GzipFile's read() has issues returning leftover\n #   uncompressed data when input is corrupted\n@@ -50,8 +50,9 @@ def gunzip(data):\n                 raise\n     return output\n \n+_is_gzipped_re = re.compile(br'^application/(x-)?gzip\\b', re.I)\n \n def is_gzipped(response):\n     \"\"\"Return True if the response is gzipped, or False otherwise\"\"\"\n     ctype = response.headers.get('Content-Type', b'')\n-    return ctype in (b'application/x-gzip', b'application/gzip')\n+    return _is_gzipped_re.search(ctype) is not None\n",
+ "spans": [
+  [
+   10,
+   10
+  ],
+  [
+   52,
+   53
+  ],
+  [
+   57,
+   57
+  ]
+ ],
+ "enclosing": [
+  [
+   54,
+   57
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

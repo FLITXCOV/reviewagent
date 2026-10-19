@@ -1,0 +1,66 @@
+{
+ "case_id": "black-12",
+ "project": "black",
+ "bug_id": 12,
+ "split": "test",
+ "file": "black.py",
+ "buggy_commit": "8b340e210271a8108995fd479c55dbc0a34466bd",
+ "fixed_commit": "b53cb9474348e13533ccba3735191a55ef3da6c4",
+ "buggy_diff": "diff --git a/black.py b/black.py\nindex 0f166c61..85cb45bd 100644\n--- a/black.py\n+++ b/black.py\n@@ -877,8 +877,8 @@ class BracketTracker:\n     bracket_match: Dict[Tuple[Depth, NodeType], Leaf] = Factory(dict)\n     delimiters: Dict[LeafID, Priority] = Factory(dict)\n     previous: Optional[Leaf] = None\n-    _for_loop_depths: List[int] = Factory(list)\n-    _lambda_argument_depths: List[int] = Factory(list)\n+    _for_loop_variable: int = 0\n+    _lambda_arguments: int = 0\n \n     def mark(self, leaf: Leaf) -> None:\n         \"\"\"Mark `leaf` with bracket-related metadata. Keep track of delimiters.\n@@ -951,21 +951,16 @@ def maybe_increment_for_loop_variable(self, leaf: Leaf) -> bool:\n         \"\"\"\n         if leaf.type == token.NAME and leaf.value == \"for\":\n             self.depth += 1\n-            self._for_loop_depths.append(self.depth)\n+            self._for_loop_variable += 1\n             return True\n \n         return False\n \n     def maybe_decrement_after_for_loop_variable(self, leaf: Leaf) -> bool:\n         \"\"\"See `maybe_increment_for_loop_variable` above for explanation.\"\"\"\n-        if (\n-            self._for_loop_depths\n-            and self._for_loop_depths[-1] == self.depth\n-            and leaf.type == token.NAME\n-            and leaf.value == \"in\"\n-        ):\n+        if self._for_loop_variable and leaf.type == token.NAME and leaf.value == \"in\":\n             self.depth -= 1\n-            self._for_loop_depths.pop()\n+            self._for_loop_variable -= 1\n             return True\n \n         return False\n@@ -978,20 +973,16 @@ def maybe_increment_lambda_arguments(self, leaf: Leaf) -> bool:\n         \"\"\"\n         if leaf.type == token.NAME and leaf.value == \"lambda\":\n             self.depth += 1\n-            self._lambda_argument_depths.append(self.depth)\n+            self._lambda_arguments += 1\n             return True\n \n         return False\n \n     def maybe_decrement_after_lambda_arguments(self, leaf: Leaf) -> bool:\n         \"\"\"See `maybe_increment_lambda_arguments` above for explanation.\"\"\"\n-        if (\n-            self._lambda_argument_depths\n-            and self._lambda_argument_depths[-1] == self.depth\n-            and leaf.type == token.COLON\n-        ):\n+        if self._lambda_arguments and leaf.type == token.COLON:\n             self.depth -= 1\n-            self._lambda_argument_depths.pop()\n+            self._lambda_arguments -= 1\n             return True\n \n         return False\n",
+ "clean_diff": "diff --git a/black.py b/black.py\nindex 85cb45bd..0f166c61 100644\n--- a/black.py\n+++ b/black.py\n@@ -877,8 +877,8 @@ class BracketTracker:\n     bracket_match: Dict[Tuple[Depth, NodeType], Leaf] = Factory(dict)\n     delimiters: Dict[LeafID, Priority] = Factory(dict)\n     previous: Optional[Leaf] = None\n-    _for_loop_variable: int = 0\n-    _lambda_arguments: int = 0\n+    _for_loop_depths: List[int] = Factory(list)\n+    _lambda_argument_depths: List[int] = Factory(list)\n \n     def mark(self, leaf: Leaf) -> None:\n         \"\"\"Mark `leaf` with bracket-related metadata. Keep track of delimiters.\n@@ -951,16 +951,21 @@ def maybe_increment_for_loop_variable(self, leaf: Leaf) -> bool:\n         \"\"\"\n         if leaf.type == token.NAME and leaf.value == \"for\":\n             self.depth += 1\n-            self._for_loop_variable += 1\n+            self._for_loop_depths.append(self.depth)\n             return True\n \n         return False\n \n     def maybe_decrement_after_for_loop_variable(self, leaf: Leaf) -> bool:\n         \"\"\"See `maybe_increment_for_loop_variable` above for explanation.\"\"\"\n-        if self._for_loop_variable and leaf.type == token.NAME and leaf.value == \"in\":\n+        if (\n+            self._for_loop_depths\n+            and self._for_loop_depths[-1] == self.depth\n+            and leaf.type == token.NAME\n+            and leaf.value == \"in\"\n+        ):\n             self.depth -= 1\n-            self._for_loop_variable -= 1\n+            self._for_loop_depths.pop()\n             return True\n \n         return False\n@@ -973,16 +978,20 @@ def maybe_increment_lambda_arguments(self, leaf: Leaf) -> bool:\n         \"\"\"\n         if leaf.type == token.NAME and leaf.value == \"lambda\":\n             self.depth += 1\n-            self._lambda_arguments += 1\n+            self._lambda_argument_depths.append(self.depth)\n             return True\n \n         return False\n \n     def maybe_decrement_after_lambda_arguments(self, leaf: Leaf) -> bool:\n         \"\"\"See `maybe_increment_lambda_arguments` above for explanation.\"\"\"\n-        if self._lambda_arguments and leaf.type == token.COLON:\n+        if (\n+            self._lambda_argument_depths\n+            and self._lambda_argument_depths[-1] == self.depth\n+            and leaf.type == token.COLON\n+        ):\n             self.depth -= 1\n-            self._lambda_arguments -= 1\n+            self._lambda_argument_depths.pop()\n             return True\n \n         return False\n",
+ "fix_patch": "diff --git a/black.py b/black.py\nindex 85cb45bd..0f166c61 100644\n--- a/black.py\n+++ b/black.py\n@@ -877,8 +877,8 @@ class BracketTracker:\n     bracket_match: Dict[Tuple[Depth, NodeType], Leaf] = Factory(dict)\n     delimiters: Dict[LeafID, Priority] = Factory(dict)\n     previous: Optional[Leaf] = None\n-    _for_loop_variable: int = 0\n-    _lambda_arguments: int = 0\n+    _for_loop_depths: List[int] = Factory(list)\n+    _lambda_argument_depths: List[int] = Factory(list)\n \n     def mark(self, leaf: Leaf) -> None:\n         \"\"\"Mark `leaf` with bracket-related metadata. Keep track of delimiters.\n@@ -951,16 +951,21 @@ def maybe_increment_for_loop_variable(self, leaf: Leaf) -> bool:\n         \"\"\"\n         if leaf.type == token.NAME and leaf.value == \"for\":\n             self.depth += 1\n-            self._for_loop_variable += 1\n+            self._for_loop_depths.append(self.depth)\n             return True\n \n         return False\n \n     def maybe_decrement_after_for_loop_variable(self, leaf: Leaf) -> bool:\n         \"\"\"See `maybe_increment_for_loop_variable` above for explanation.\"\"\"\n-        if self._for_loop_variable and leaf.type == token.NAME and leaf.value == \"in\":\n+        if (\n+            self._for_loop_depths\n+            and self._for_loop_depths[-1] == self.depth\n+            and leaf.type == token.NAME\n+            and leaf.value == \"in\"\n+        ):\n             self.depth -= 1\n-            self._for_loop_variable -= 1\n+            self._for_loop_depths.pop()\n             return True\n \n         return False\n@@ -973,16 +978,20 @@ def maybe_increment_lambda_arguments(self, leaf: Leaf) -> bool:\n         \"\"\"\n         if leaf.type == token.NAME and leaf.value == \"lambda\":\n             self.depth += 1\n-            self._lambda_arguments += 1\n+            self._lambda_argument_depths.append(self.depth)\n             return True\n \n         return False\n \n     def maybe_decrement_after_lambda_arguments(self, leaf: Leaf) -> bool:\n         \"\"\"See `maybe_increment_lambda_arguments` above for explanation.\"\"\"\n-        if self._lambda_arguments and leaf.type == token.COLON:\n+        if (\n+            self._lambda_argument_depths\n+            and self._lambda_argument_depths[-1] == self.depth\n+            and leaf.type == token.COLON\n+        ):\n             self.depth -= 1\n-            self._lambda_arguments -= 1\n+            self._lambda_argument_depths.pop()\n             return True\n \n         return False\n",
+ "spans": [
+  [
+   880,
+   881
+  ],
+  [
+   954,
+   954
+  ],
+  [
+   961,
+   961
+  ],
+  [
+   963,
+   963
+  ],
+  [
+   976,
+   976
+  ],
+  [
+   983,
+   983
+  ],
+  [
+   985,
+   985
+  ]
+ ],
+ "enclosing": [
+  [
+   872,
+   992
+  ],
+  [
+   946,
+   957
+  ],
+  [
+   959,
+   966
+  ],
+  [
+   968,
+   979
+  ],
+  [
+   981,
+   988
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

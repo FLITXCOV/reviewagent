@@ -1,0 +1,30 @@
+{
+ "case_id": "fastapi-11",
+ "project": "fastapi",
+ "bug_id": 11,
+ "split": "test",
+ "file": "fastapi/dependencies/utils.py",
+ "buggy_commit": "bf229ad5d830eb5320f966d51a55e590e8d57008",
+ "fixed_commit": "06eb4219345a77d23484528c9d164eb8d2097fec",
+ "buggy_diff": "diff --git a/fastapi/dependencies/utils.py b/fastapi/dependencies/utils.py\nindex c898ab7db..28c57c296 100644\n--- a/fastapi/dependencies/utils.py\n+++ b/fastapi/dependencies/utils.py\n@@ -131,17 +131,12 @@ def get_flat_dependant(dependant: Dependant) -> Dependant:\n \n \n def is_scalar_field(field: Field) -> bool:\n-    if not (\n+    return (\n         field.shape == Shape.SINGLETON\n         and not lenient_issubclass(field.type_, BaseModel)\n         and not lenient_issubclass(field.type_, sequence_types + (dict,))\n         and not isinstance(field.schema, params.Body)\n-    ):\n-        return False\n-    if field.sub_fields:\n-        if not all(is_scalar_field(f) for f in field.sub_fields):\n-            return False\n-    return True\n+    )\n \n \n def is_scalar_sequence_field(field: Field) -> bool:\n",
+ "clean_diff": "diff --git a/fastapi/dependencies/utils.py b/fastapi/dependencies/utils.py\nindex 28c57c296..c898ab7db 100644\n--- a/fastapi/dependencies/utils.py\n+++ b/fastapi/dependencies/utils.py\n@@ -131,12 +131,17 @@ def get_flat_dependant(dependant: Dependant) -> Dependant:\n \n \n def is_scalar_field(field: Field) -> bool:\n-    return (\n+    if not (\n         field.shape == Shape.SINGLETON\n         and not lenient_issubclass(field.type_, BaseModel)\n         and not lenient_issubclass(field.type_, sequence_types + (dict,))\n         and not isinstance(field.schema, params.Body)\n-    )\n+    ):\n+        return False\n+    if field.sub_fields:\n+        if not all(is_scalar_field(f) for f in field.sub_fields):\n+            return False\n+    return True\n \n \n def is_scalar_sequence_field(field: Field) -> bool:\n",
+ "fix_patch": "diff --git a/fastapi/dependencies/utils.py b/fastapi/dependencies/utils.py\nindex 28c57c296..c898ab7db 100644\n--- a/fastapi/dependencies/utils.py\n+++ b/fastapi/dependencies/utils.py\n@@ -131,12 +131,17 @@ def get_flat_dependant(dependant: Dependant) -> Dependant:\n \n \n def is_scalar_field(field: Field) -> bool:\n-    return (\n+    if not (\n         field.shape == Shape.SINGLETON\n         and not lenient_issubclass(field.type_, BaseModel)\n         and not lenient_issubclass(field.type_, sequence_types + (dict,))\n         and not isinstance(field.schema, params.Body)\n-    )\n+    ):\n+        return False\n+    if field.sub_fields:\n+        if not all(is_scalar_field(f) for f in field.sub_fields):\n+            return False\n+    return True\n \n \n def is_scalar_sequence_field(field: Field) -> bool:\n",
+ "spans": [
+  [
+   134,
+   134
+  ],
+  [
+   139,
+   139
+  ]
+ ],
+ "enclosing": [
+  [
+   133,
+   139
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

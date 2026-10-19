@@ -1,0 +1,26 @@
+{
+ "case_id": "luigi-28",
+ "project": "luigi",
+ "bug_id": 28,
+ "split": "test",
+ "file": "luigi/contrib/hive.py",
+ "buggy_commit": "e37cb0ea1d97e6340840128a68c8d59bd05c28c3",
+ "fixed_commit": "e2be971226c34a193d7029c51206e488b6a037cd",
+ "buggy_diff": "diff --git a/luigi/contrib/hive.py b/luigi/contrib/hive.py\nindex 02823924..3ccadd2e 100644\n--- a/luigi/contrib/hive.py\n+++ b/luigi/contrib/hive.py\n@@ -138,7 +138,7 @@ class HiveCommandClient(HiveClient):\n         if partition is None:\n             stdout = run_hive_cmd('use {0}; show tables like \"{1}\";'.format(database, table))\n \n-            return stdout and table.lower() in stdout\n+            return stdout and table in stdout\n         else:\n             stdout = run_hive_cmd(\"\"\"use %s; show partitions %s partition\n                                 (%s)\"\"\" % (database, table, self.partition_spec(partition)))\n",
+ "clean_diff": "diff --git a/luigi/contrib/hive.py b/luigi/contrib/hive.py\nindex 3ccadd2e..02823924 100644\n--- a/luigi/contrib/hive.py\n+++ b/luigi/contrib/hive.py\n@@ -138,7 +138,7 @@ class HiveCommandClient(HiveClient):\n         if partition is None:\n             stdout = run_hive_cmd('use {0}; show tables like \"{1}\";'.format(database, table))\n \n-            return stdout and table in stdout\n+            return stdout and table.lower() in stdout\n         else:\n             stdout = run_hive_cmd(\"\"\"use %s; show partitions %s partition\n                                 (%s)\"\"\" % (database, table, self.partition_spec(partition)))\n",
+ "fix_patch": "diff --git a/luigi/contrib/hive.py b/luigi/contrib/hive.py\nindex 3ccadd2e..02823924 100644\n--- a/luigi/contrib/hive.py\n+++ b/luigi/contrib/hive.py\n@@ -138,7 +138,7 @@ class HiveCommandClient(HiveClient):\n         if partition is None:\n             stdout = run_hive_cmd('use {0}; show tables like \"{1}\";'.format(database, table))\n \n-            return stdout and table in stdout\n+            return stdout and table.lower() in stdout\n         else:\n             stdout = run_hive_cmd(\"\"\"use %s; show partitions %s partition\n                                 (%s)\"\"\" % (database, table, self.partition_spec(partition)))\n",
+ "spans": [
+  [
+   141,
+   141
+  ]
+ ],
+ "enclosing": [
+  [
+   137,
+   149
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

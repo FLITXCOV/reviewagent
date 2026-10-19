@@ -1,0 +1,30 @@
+{
+ "case_id": "black-13",
+ "project": "black",
+ "bug_id": 13,
+ "split": "test",
+ "file": "blib2to3/pgen2/tokenize.py",
+ "buggy_commit": "b719d85ccc330170e40b2617307a7e3b2a0bab14",
+ "fixed_commit": "883689366ce0f0e0ddd66d81360c61abfd19b01a",
+ "buggy_diff": "diff --git a/blib2to3/pgen2/tokenize.py b/blib2to3/pgen2/tokenize.py\nindex 1f51ff00..9a7664bb 100644\n--- a/blib2to3/pgen2/tokenize.py\n+++ b/blib2to3/pgen2/tokenize.py\n@@ -516,14 +516,13 @@ def generate_tokens(readline):\n                         stashed = tok\n                         continue\n \n-                    if token in ('def', 'for'):\n+                    if token == 'def':\n                         if (stashed\n                                 and stashed[0] == NAME\n                                 and stashed[1] == 'async'):\n \n-                            if token == 'def':\n-                                async_def = True\n-                                async_def_indent = indents[-1]\n+                            async_def = True\n+                            async_def_indent = indents[-1]\n \n                             yield (ASYNC, stashed[1],\n                                    stashed[2], stashed[3],\n",
+ "clean_diff": "diff --git a/blib2to3/pgen2/tokenize.py b/blib2to3/pgen2/tokenize.py\nindex 9a7664bb..1f51ff00 100644\n--- a/blib2to3/pgen2/tokenize.py\n+++ b/blib2to3/pgen2/tokenize.py\n@@ -516,13 +516,14 @@ def generate_tokens(readline):\n                         stashed = tok\n                         continue\n \n-                    if token == 'def':\n+                    if token in ('def', 'for'):\n                         if (stashed\n                                 and stashed[0] == NAME\n                                 and stashed[1] == 'async'):\n \n-                            async_def = True\n-                            async_def_indent = indents[-1]\n+                            if token == 'def':\n+                                async_def = True\n+                                async_def_indent = indents[-1]\n \n                             yield (ASYNC, stashed[1],\n                                    stashed[2], stashed[3],\n",
+ "fix_patch": "diff --git a/blib2to3/pgen2/tokenize.py b/blib2to3/pgen2/tokenize.py\nindex 9a7664bb..1f51ff00 100644\n--- a/blib2to3/pgen2/tokenize.py\n+++ b/blib2to3/pgen2/tokenize.py\n@@ -516,13 +516,14 @@ def generate_tokens(readline):\n                         stashed = tok\n                         continue\n \n-                    if token == 'def':\n+                    if token in ('def', 'for'):\n                         if (stashed\n                                 and stashed[0] == NAME\n                                 and stashed[1] == 'async'):\n \n-                            async_def = True\n-                            async_def_indent = indents[-1]\n+                            if token == 'def':\n+                                async_def = True\n+                                async_def_indent = indents[-1]\n \n                             yield (ASYNC, stashed[1],\n                                    stashed[2], stashed[3],\n",
+ "spans": [
+  [
+   519,
+   519
+  ],
+  [
+   524,
+   525
+  ]
+ ],
+ "enclosing": [
+  [
+   337,
+   562
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

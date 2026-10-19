@@ -1,0 +1,10 @@
+diff --git a/app/math_utils.py b/app/math_utils.py
+index e69de29..c3c2b1a 100644
+--- a/app/math_utils.py
++++ b/app/math_utils.py
+@@ -1,5 +1,11 @@
+ def calculate_average(values: list[float]) -> float:
+     """Calculate the arithmetic mean of a non-empty list of numbers."""
+     if not values:
+         raise ValueError("Cannot calculate average of an empty list")
+     return sum(values) / len(values)

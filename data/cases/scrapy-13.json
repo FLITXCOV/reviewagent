@@ -1,0 +1,26 @@
+{
+ "case_id": "scrapy-13",
+ "project": "scrapy",
+ "bug_id": 13,
+ "split": "test",
+ "file": "scrapy/pipelines/images.py",
+ "buggy_commit": "fa78849e335994a1617ed63221a70940c21cca20",
+ "fixed_commit": "414857a593ad5b82fa21d6344928f43f93dc9f14",
+ "buggy_diff": "diff --git a/scrapy/pipelines/images.py b/scrapy/pipelines/images.py\nindex af5825c0b..964541d6a 100644\n--- a/scrapy/pipelines/images.py\n+++ b/scrapy/pipelines/images.py\n@@ -42,7 +42,7 @@ class ImagesPipeline(FilesPipeline):\n     # ImagesPipeline. They may be overridden by settings.\n     MIN_WIDTH = 0\n     MIN_HEIGHT = 0\n-    EXPIRES = 90\n+    EXPIRES = 0\n     THUMBS = {}\n     DEFAULT_IMAGES_URLS_FIELD = 'image_urls'\n     DEFAULT_IMAGES_RESULT_FIELD = 'images'\n",
+ "clean_diff": "diff --git a/scrapy/pipelines/images.py b/scrapy/pipelines/images.py\nindex 964541d6a..af5825c0b 100644\n--- a/scrapy/pipelines/images.py\n+++ b/scrapy/pipelines/images.py\n@@ -42,7 +42,7 @@ class ImagesPipeline(FilesPipeline):\n     # ImagesPipeline. They may be overridden by settings.\n     MIN_WIDTH = 0\n     MIN_HEIGHT = 0\n-    EXPIRES = 0\n+    EXPIRES = 90\n     THUMBS = {}\n     DEFAULT_IMAGES_URLS_FIELD = 'image_urls'\n     DEFAULT_IMAGES_RESULT_FIELD = 'images'\n",
+ "fix_patch": "diff --git a/scrapy/pipelines/images.py b/scrapy/pipelines/images.py\nindex 964541d6a..af5825c0b 100644\n--- a/scrapy/pipelines/images.py\n+++ b/scrapy/pipelines/images.py\n@@ -42,7 +42,7 @@ class ImagesPipeline(FilesPipeline):\n     # ImagesPipeline. They may be overridden by settings.\n     MIN_WIDTH = 0\n     MIN_HEIGHT = 0\n-    EXPIRES = 0\n+    EXPIRES = 90\n     THUMBS = {}\n     DEFAULT_IMAGES_URLS_FIELD = 'image_urls'\n     DEFAULT_IMAGES_RESULT_FIELD = 'images'\n",
+ "spans": [
+  [
+   45,
+   45
+  ]
+ ],
+ "enclosing": [
+  [
+   34,
+   219
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

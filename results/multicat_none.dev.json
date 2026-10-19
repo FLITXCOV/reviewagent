@@ -1,0 +1,565 @@
+{
+ "summary": {
+  "n_buggy": 10,
+  "n_clean": 10,
+  "recall_lenient": {
+   "k": 7,
+   "n": 10,
+   "pct": 70.0,
+   "ci_low": 39.67732199795652,
+   "ci_high": 89.2210712513788
+  },
+  "recall_strict": {
+   "k": 3,
+   "n": 10,
+   "pct": 30.0,
+   "ci_low": 10.778928748621183,
+   "ci_high": 60.322678002043475
+  },
+  "by_stratum": {
+   "modification": {
+    "lenient": {
+     "k": 7,
+     "n": 10,
+     "pct": 70.0,
+     "ci_low": 39.67732199795652,
+     "ci_high": 89.2210712513788
+    },
+    "strict": {
+     "k": 3,
+     "n": 10,
+     "pct": 30.0,
+     "ci_low": 10.778928748621183,
+     "ci_high": 60.322678002043475
+    }
+   }
+  },
+  "fp_rate_clean": {
+   "k": 0,
+   "n": 10,
+   "pct": 0.0,
+   "ci_low": 0.0,
+   "ci_high": 27.75401687666166
+  },
+  "findings_per_clean_diff": 0.7,
+  "precision_strict": {
+   "k": 3,
+   "n": 17,
+   "pct": 17.647058823529413,
+   "ci_low": 6.19101371254899,
+   "ci_high": 41.02992901737578
+  },
+  "arm": "multicat_none",
+  "llm_calls": 38,
+  "retries": 18,
+  "failed_nodes": 4,
+  "hunk_splits": 0,
+  "judge_errors": 0
+ },
+ "per_case": [
+  {
+   "case_id": "black-1",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "black.py",
+      "line_start": 621,
+      "line_end": 646,
+      "category": "error_handling",
+      "severity": "high",
+      "confidence": 1.0,
+      "message": "The changes remove robust error handling for `ProcessPoolExecutor` instantiation. Previously, an `OSError` (e.g., in environments without multiprocessing support like AWS Lambda) would be caught, and `executor` would gracefully fall back to `None`. The `schedule_formatting` function was typed to accept `Optional[Executor]` to accommodate this, and `executor.shutdown()` was conditionally called. The new code directly instantiates `ProcessPoolExecutor` without error handling, causing the application to crash on `OSError`. Additionally, `schedule_formatting` now expects a non-optional `Executor`, and `executor.shutdown()` is unconditionally called, making the original `None` fallback impossible without further changes. This significantly reduces the application's resilience in certain environments.",
+      "evidence": [
+       "-     try:",
+       "-         executor = ProcessPoolExecutor(max_workers=worker_count)",
+       "-     except OSError:",
+       "-         # we arrive here if the underlying system does not support multi-processing",
+       "-         # like in AWS Lambda, in which case we gracefully fallback to the default",
+       "-         # mono-process Executor by using None",
+       "-         executor = None",
+       "+     executor = ProcessPoolExecutor(max_workers=worker_count)",
+       "-         if executor is not None:",
+       "-             executor.shutdown()",
+       "+         executor.shutdown()",
+       "-     executor: Optional[Executor],",
+       "+     executor: Executor,"
+      ],
+      "suggested_fix": "Reintroduce the `try...except OSError` block around `ProcessPoolExecutor` instantiation. To maintain the original graceful fallback, `executor` should be set to `None` on `OSError`. The type hint for `executor` in `schedule_formatting` should be reverted to `Optional[Executor]`, and the `executor.shutdown()` call should be made conditional (`if executor is not None:`). The `schedule_formatting` function would then need to handle the `None` case (e.g., by running tasks sequentially)."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "black.py",
+      "line_start": 621,
+      "line_end": 623,
+      "category": "error_handling",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "The `try...except OSError` block at lines 621-623 is too narrow to catch all relevant exceptions that might occur when initializing `ProcessPoolExecutor` due to underlying system limitations. For example, `multiprocessing.ProcessPoolExecutor` can raise a `RuntimeError` (e.g., \"cannot start a process from a non-main thread\" or issues with `start_method`) in environments where multiprocessing is restricted or configured unusually. If a `RuntimeError` occurs, it will not be caught, leading to an unhandled exception and program termination instead of the intended graceful fallback to a single-process execution.",
+      "evidence": [
+       "621 +     try:",
+       "622 +         executor = ProcessPoolExecutor(max_workers=worker_count)",
+       "623 +     except OSError:"
+      ],
+      "suggested_fix": "Broaden the exception handling to include `RuntimeError` or a more general exception if the intent is to catch any failure to initialize the executor due to environment constraints. For example, `except (OSError, RuntimeError):`."
+     },
+     {
+      "file": "black.py",
+      "line_start": 623,
+      "line_end": 627,
+      "category": "tests",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "The new error handling branch introduced by `except OSError` (lines 623-627) is not covered by tests. This path represents a critical fallback mechanism for environments where `ProcessPoolExecutor` cannot be initialized. Without tests, there's no guarantee that the fallback to `executor = None` works correctly, and more importantly, that the downstream code (e.g., `schedule_formatting` and the `finally` block's `executor.shutdown()`) correctly handles a `None` executor without raising further errors.",
+      "evidence": [
+       "623 +     except OSError:",
+       "624 +         # we arrive here if the underlying system does not support multi-processing",
+       "625 +         # like in AWS Lambda, in which case we gracefully fallback to the default",
+       "626 +         # mono-process Executor by using None",
+       "627 +         executor = None"
+      ],
+      "suggested_fix": "Add unit tests that mock `multiprocessing.ProcessPoolExecutor` to raise an `OSError` (and potentially a `RuntimeError` as per the previous finding) during initialization. Assert that `executor` is correctly set to `None` and that the program continues execution without crashing, verifying the graceful fallback."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "black-10",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "blib2to3/pgen2/driver.py",
+      "line_start": 136,
+      "line_end": 137,
+      "category": "tests",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "The change introduces new logic for calculating `current_column` when a tab character (`\\t`) is encountered, changing the increment from 1 to 4. There should be dedicated test cases to verify this new behavior, including scenarios with multiple tabs, tabs mixed with spaces, and tabs at various positions within a line, to ensure accurate column tracking.",
+      "evidence": [
+       "+             elif char == '\\t':",
+       "+                 current_column += 4"
+      ],
+      "suggested_fix": "Add new unit tests or update existing ones to specifically cover the new column calculation logic for tab characters, ensuring `current_column` increments by 4 for each tab."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "blib2to3/pgen2/driver.py",
+      "line_start": 134,
+      "line_end": 135,
+      "category": "logic",
+      "severity": "medium",
+      "confidence": 1.0,
+      "message": "The change incorrectly calculates the `current_column` for tab characters. Previously, a tab advanced the column by 4, but now it only advances by 1, which is typically incorrect for tab characters and will lead to misaligned column reporting.",
+      "evidence": [
+       "            elif char in ' \\t':",
+       "                  current_column += 1"
+      ],
+      "suggested_fix": "Revert the tab handling to increment `current_column` by 4, or introduce a more sophisticated tab stop calculation if needed."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 1,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 2
+   }
+  },
+  {
+   "case_id": "fastapi-8",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "fastapi/routing.py",
+      "line_start": 350,
+      "line_end": 352,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 1.0,
+      "message": "The change removes the `route_class_override` parameter from `add_api_route` and its usage, preventing users from specifying a custom `APIRoute` subclass for individual routes. Previously, this allowed for fine-grained control over route behavior. Now, all routes added via `add_api_route` will strictly use `self.route_class` (which defaults to `APIRoute`), even if a custom `APIRoute` subclass was intended. This removes a key extensibility point and breaks backward compatibility for users relying on custom route classes.",
+      "evidence": [
+       "       -         route_class_override: Optional[Type[APIRoute]] = None,",
+       "       -         route_class = route_class_override or self.route_class",
+       "       -         route = route_class(",
+       "   352 +         route = self.route_class("
+      ],
+      "suggested_fix": "Reintroduce the `route_class_override` parameter and its logic to allow specifying custom `APIRoute` subclasses. If the intent is to simplify, a clear deprecation path and an alternative mechanism for achieving similar customization should be provided."
+     },
+     {
+      "file": "fastapi/routing.py",
+      "line_start": 489,
+      "line_end": 489,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 1.0,
+      "message": "The removal of `route_class_override=type(route)` when re-adding routes (e.g., during `include_router` or `mount` operations) means that custom `APIRoute` subclasses from included routers will no longer be preserved. Instead, when these routes are re-added to the main router, they will be instantiated using the main router's `self.route_class`. This effectively strips custom `APIRoute` behavior from included routes, leading to unexpected behavior and loss of functionality for applications that rely on custom route types in sub-routers.",
+      "evidence": [
+       "       -                     route_class_override=type(route),"
+      ],
+      "suggested_fix": "Reintroduce `route_class_override=type(route)` to ensure that the original custom `APIRoute` subclass is preserved when routes are re-added, maintaining the intended behavior and extensibility."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "fastapi/routing.py",
+      "line_start": 351,
+      "line_end": 492,
+      "category": "tests",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "The change introduces a new feature allowing the override of the `APIRoute` class for individual routes and ensures its preservation when including routers. There are no corresponding tests in the provided diff to verify this new functionality. Specifically, tests should cover: 1) defining a route with a custom `route_class_override` and asserting that the custom class is used, and 2) including an `APIRouter` that contains routes with custom `APIRoute` subclasses and verifying that these custom types are correctly preserved in the parent router.",
+      "evidence": [
+       "   351 +         route_class_override: Optional[Type[APIRoute]] = None,",
+       "   353 +         route_class = route_class_override or self.route_class",
+       "   354 +         route = route_class(",
+       "   492 +                     route_class_override=type(route),"
+      ],
+      "suggested_fix": "Add new test cases to `fastapi/tests/test_routing.py` (or an appropriate test file) that specifically test the `route_class_override` parameter and the preservation of custom `APIRoute` types when including routers."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "httpie-1",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "httpie/downloads.py",
+      "line_start": 142,
+      "line_end": 143,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 1.0,
+      "message": "The change removes the filename trimming logic, which previously ensured that generated filenames did not exceed the maximum length allowed by the filesystem (e.g., PC_NAME_MAX). As a result, `get_unique_filename` can now return filenames that are too long for the underlying filesystem. When the calling code attempts to create a file with such a name, it will likely fail with an OSError (e.g., ENAMETOOLONG), leading to download failures for legitimate long filenames.",
+      "evidence": [
+       "-         try_filename = trim_filename_if_needed(filename, extra=len(suffix))",
+       "-         try_filename += suffix",
+       "-         if not exists(try_filename):",
+       "-             return try_filename",
+       "+         if not exists(filename + suffix):",
+       "+             return filename + suffix"
+      ],
+      "suggested_fix": "Reintroduce the filename trimming logic (e.g., `trim_filename_if_needed` and its dependencies) to ensure that `get_unique_filename` always returns a filename that is valid for the filesystem. Alternatively, if trimming is no longer desired, the calling code must be robustly updated to handle `OSError` specifically for `ENAMETOOLONG` when attempting to create files, providing a user-friendly error message."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "httpie/downloads.py",
+      "line_start": 139,
+      "line_end": 176,
+      "category": "tests",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "The newly introduced functions (`trim_filename`, `get_filename_max_length`, `trim_filename_if_needed`) and the modified `get_unique_filename` lack dedicated test coverage. Comprehensive tests are needed to ensure their correctness across various scenarios, including:\n- `trim_filename`: Trimming with and without extensions, cases where the name part is fully consumed, edge cases like empty filenames or `max_len` of 0.\n- `get_filename_max_length`: Successful retrieval of `PC_NAME_MAX`, handling of `errno.EINVAL` (fallback to 255), and re-raising other `OSError` types.\n- `trim_filename_if_needed`: Scenarios where trimming is and isn't needed, and correct application of the `extra` parameter.\n- `get_unique_filename`: Interaction between filename trimming and suffix generation to ensure the final filename always respects the `PC_NAME_MAX` limit.",
+      "evidence": [
+       "def trim_filename(filename, max_len):",
+       "def get_filename_max_length(directory):",
+       "def trim_filename_if_needed(filename, directory='.', extra=0):",
+       "def get_unique_filename(filename, exists=os.path.exists):"
+      ],
+      "suggested_fix": null
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "luigi-18",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "luigi/scheduler.py",
+      "line_start": 405,
+      "line_end": 405,
+      "category": "logic",
+      "severity": "medium",
+      "confidence": 1.0,
+      "message": "The change removes the condition `new_status != DISABLED`. This means that if a task has been disabled by the scheduler (`task.scheduler_disable_time is not None`), any status update from a worker, including setting the status to `DISABLED`, will be ignored. The original logic correctly allowed workers to report `DISABLED` status even if the task was already scheduler-disabled, as this does not 'override a scheduler disable' but rather aligns with it. Silently dropping such updates can lead to an inconsistent `task.status` (e.g., remaining `RUNNING` while the worker reported `DISABLED`) and obscure worker intent, making debugging harder.",
+      "evidence": [
+       "-             elif task.scheduler_disable_time is not None and new_status != DISABLED:",
+       "+             elif task.scheduler_disable_time is not None:"
+      ],
+      "suggested_fix": "Revert the change to the `elif` condition to include `and new_status != DISABLED`:\n`elif task.scheduler_disable_time is not None and new_status != DISABLED:`"
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "sanic-1",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "sanic/app.py",
+      "line_start": 656,
+      "line_end": 656,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 1.0,
+      "message": "The change from `appendleft` to `append` reverses the execution order of response middleware relative to their registration order. Previously, the most recently registered response middleware would execute first (Last In, First Out - LIFO). With this change, the first registered response middleware will execute first (First In, First Out - FIFO). This alters a fundamental behavior of how response middleware interacts and could break existing applications that rely on the previous LIFO ordering, which is common in the 'onion' model for response middleware (where middleware conceptually closer to the application core processes the response first).",
+      "evidence": [
+       "-                     self.named_response_middleware[_rn].appendleft(middleware)",
+       "+                     self.named_response_middleware[_rn].append(middleware)"
+      ],
+      "suggested_fix": "Revert the change to `appendleft` if the original LIFO execution order for response middleware was the intended behavior, as it aligns with common middleware patterns for response processing."
+     },
+     {
+      "file": "sanic/app.py",
+      "line_start": 656,
+      "line_end": 656,
+      "category": "tests",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "This significant change in middleware execution order introduces a new behavior that should be explicitly covered by unit or integration tests. Without dedicated tests asserting the correct processing order of multiple response middleware functions, regressions or unintended behavior changes could go unnoticed.",
+      "evidence": [
+       "-                     self.named_response_middleware[_rn].appendleft(middleware)",
+       "+                     self.named_response_middleware[_rn].append(middleware)"
+      ],
+      "suggested_fix": "Add new tests or update existing ones to explicitly verify the execution order of response middleware, ensuring it matches the intended behavior (whether LIFO or FIFO)."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "sanic/app.py",
+      "line_start": 656,
+      "line_end": 656,
+      "category": "logic",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "The change from `append` to `appendleft` on line 656 reverses the order in which named response middleware functions are added to the internal `deque`. Assuming the middleware is processed by iterating the deque from left to right or by using `popleft()`, this means that middleware registered earlier will now be executed *after* middleware registered later. This alters the execution order from FIFO (first-in, first-out) to LIFO (last-in, first-out) relative to registration, which could break existing application logic that relies on the previous ordering. For example, if middleware A is registered then middleware B, the old behavior would execute A then B, while the new behavior will execute B then A.",
+      "evidence": [
+       "-                     self.named_response_middleware[_rn].append(middleware)",
+       "+                     self.named_response_middleware[_rn].appendleft(middleware)"
+      ],
+      "suggested_fix": "Confirm the intended execution order for named response middleware. If FIFO (first-in, first-out) relative to registration is desired, revert to `append`. If LIFO (last-in, first-out) is desired, ensure this change is intentional and documented as a breaking change if users might have relied on the previous FIFO behavior."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "scrapy-23",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "scrapy/downloadermiddlewares/httpproxy.py",
+      "line_start": 29,
+      "line_end": 29,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 1.0,
+      "message": "The `base64.b64encode` function expects a bytes-like object as input. After this change, `user_pass` is a Python 3 string, not bytes. This will result in a `TypeError` when `base64.b64encode(user_pass)` is called, breaking proxy authentication for any proxy requiring credentials.",
+      "evidence": [
+       "user_pass = '%s:%s' % (unquote(user), unquote(password))",
+       "creds = base64.b64encode(user_pass).strip()"
+      ],
+      "suggested_fix": "user_pass = ('%s:%s' % (unquote(user), unquote(password))).encode('utf-8')"
+     },
+     {
+      "file": "scrapy/downloadermiddlewares/httpproxy.py",
+      "line_start": 55,
+      "line_end": 55,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 1.0,
+      "message": "The `creds` variable, which is the result of `base64.b64encode`, is a bytes object. Concatenating a string literal `'Basic '` with a bytes object `creds` will raise a `TypeError`. The `Proxy-Authorization` header expects a bytes value, as indicated by the previous code using `b'Basic '`.",
+      "evidence": [
+       "request.headers['Proxy-Authorization'] = 'Basic ' + creds"
+      ],
+      "suggested_fix": "request.headers['Proxy-Authorization'] = b'Basic ' + creds"
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "scrapy-7",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 1,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 2
+   },
+   "clean": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "scrapy/http/request/form.py",
+      "line_start": 57,
+      "line_end": 60,
+      "category": "tests",
+      "severity": "low",
+      "confidence": 0.9,
+      "message": "The change introduces explicit handling for form elements where the 'action' attribute is missing (None) or contains leading/trailing HTML5 whitespace. New tests should be added to cover these specific scenarios to ensure the correct URL resolution (returning `form.base_url` for missing/empty action, and correctly stripping whitespace).",
+      "evidence": [
+       "        action = form.get('action')",
+       "        if action is None:",
+       "            return form.base_url",
+       "        return urljoin(form.base_url, strip_html5_whitespace(action))"
+      ],
+      "suggested_fix": "Add unit tests for `_get_form_url` with `form` elements having:\n- No `action` attribute (e.g., `<form></form>`).\n- An `action` attribute with only whitespace (e.g., `<form action=\"   \"></form>`).\n- An `action` attribute with leading/trailing whitespace (e.g., `<form action=\"  page.html  \"></form>`)."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "thefuck-22",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  },
+  {
+   "case_id": "tqdm-4",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  }
+ ]
+}

@@ -1,0 +1,26 @@
+{
+ "case_id": "luigi-25",
+ "project": "luigi",
+ "bug_id": 25,
+ "split": "test",
+ "file": "luigi/contrib/redshift.py",
+ "buggy_commit": "d7ec31609c88503391d12d65b6037f397feff816",
+ "fixed_commit": "040bbc9ef8d1703b64d13c60f271fded63e13601",
+ "buggy_diff": "diff --git a/luigi/contrib/redshift.py b/luigi/contrib/redshift.py\nindex 93d5a392..af0223ea 100644\n--- a/luigi/contrib/redshift.py\n+++ b/luigi/contrib/redshift.py\n@@ -163,7 +163,7 @@ class S3CopyToTable(rdbms.CopyToTable):\n         if not (self.table):\n             raise Exception(\"table need to be specified\")\n \n-        path = self.s3_load_path\n+        path = self.s3_load_path()\n         connection = self.output().connect()\n         if not self.does_table_exist(connection):\n             # try creating table\n",
+ "clean_diff": "diff --git a/luigi/contrib/redshift.py b/luigi/contrib/redshift.py\nindex af0223ea..93d5a392 100644\n--- a/luigi/contrib/redshift.py\n+++ b/luigi/contrib/redshift.py\n@@ -163,7 +163,7 @@ class S3CopyToTable(rdbms.CopyToTable):\n         if not (self.table):\n             raise Exception(\"table need to be specified\")\n \n-        path = self.s3_load_path()\n+        path = self.s3_load_path\n         connection = self.output().connect()\n         if not self.does_table_exist(connection):\n             # try creating table\n",
+ "fix_patch": "diff --git a/luigi/contrib/redshift.py b/luigi/contrib/redshift.py\nindex af0223ea..93d5a392 100644\n--- a/luigi/contrib/redshift.py\n+++ b/luigi/contrib/redshift.py\n@@ -163,7 +163,7 @@ class S3CopyToTable(rdbms.CopyToTable):\n         if not (self.table):\n             raise Exception(\"table need to be specified\")\n \n-        path = self.s3_load_path()\n+        path = self.s3_load_path\n         connection = self.output().connect()\n         if not self.does_table_exist(connection):\n             # try creating table\n",
+ "spans": [
+  [
+   166,
+   166
+  ]
+ ],
+ "enclosing": [
+  [
+   158,
+   185
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

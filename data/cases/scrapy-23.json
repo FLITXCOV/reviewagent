@@ -1,0 +1,38 @@
+{
+ "case_id": "scrapy-23",
+ "project": "scrapy",
+ "bug_id": 23,
+ "split": "dev",
+ "file": "scrapy/downloadermiddlewares/httpproxy.py",
+ "buggy_commit": "c9e046d11dc63fbdc40effce4e6d15bcecd44593",
+ "fixed_commit": "f042ad0f39594d59a1a2032e6294ff1890638138",
+ "buggy_diff": "diff --git a/scrapy/downloadermiddlewares/httpproxy.py b/scrapy/downloadermiddlewares/httpproxy.py\nindex 8c3514fd0..dda6a3d2a 100644\n--- a/scrapy/downloadermiddlewares/httpproxy.py\n+++ b/scrapy/downloadermiddlewares/httpproxy.py\n@@ -9,7 +9,7 @@ from six.moves.urllib.parse import urlunparse\n \n from scrapy.utils.httpobj import urlparse_cached\n from scrapy.exceptions import NotConfigured\n-from scrapy.utils.python import to_bytes\n+\n \n class HttpProxyMiddleware(object):\n \n@@ -26,7 +26,7 @@ class HttpProxyMiddleware(object):\n         proxy_url = urlunparse((proxy_type or orig_type, hostport, '', '', '', ''))\n \n         if user:\n-            user_pass = to_bytes('%s:%s' % (unquote(user), unquote(password)))\n+            user_pass = '%s:%s' % (unquote(user), unquote(password))\n             creds = base64.b64encode(user_pass).strip()\n         else:\n             creds = None\n@@ -52,4 +52,4 @@ class HttpProxyMiddleware(object):\n         creds, proxy = self.proxies[scheme]\n         request.meta['proxy'] = proxy\n         if creds:\n-            request.headers['Proxy-Authorization'] = b'Basic ' + creds\n+            request.headers['Proxy-Authorization'] = 'Basic ' + creds\n",
+ "clean_diff": "diff --git a/scrapy/downloadermiddlewares/httpproxy.py b/scrapy/downloadermiddlewares/httpproxy.py\nindex dda6a3d2a..8c3514fd0 100644\n--- a/scrapy/downloadermiddlewares/httpproxy.py\n+++ b/scrapy/downloadermiddlewares/httpproxy.py\n@@ -9,7 +9,7 @@ from six.moves.urllib.parse import urlunparse\n \n from scrapy.utils.httpobj import urlparse_cached\n from scrapy.exceptions import NotConfigured\n-\n+from scrapy.utils.python import to_bytes\n \n class HttpProxyMiddleware(object):\n \n@@ -26,7 +26,7 @@ class HttpProxyMiddleware(object):\n         proxy_url = urlunparse((proxy_type or orig_type, hostport, '', '', '', ''))\n \n         if user:\n-            user_pass = '%s:%s' % (unquote(user), unquote(password))\n+            user_pass = to_bytes('%s:%s' % (unquote(user), unquote(password)))\n             creds = base64.b64encode(user_pass).strip()\n         else:\n             creds = None\n@@ -52,4 +52,4 @@ class HttpProxyMiddleware(object):\n         creds, proxy = self.proxies[scheme]\n         request.meta['proxy'] = proxy\n         if creds:\n-            request.headers['Proxy-Authorization'] = 'Basic ' + creds\n+            request.headers['Proxy-Authorization'] = b'Basic ' + creds\n",
+ "fix_patch": "diff --git a/scrapy/downloadermiddlewares/httpproxy.py b/scrapy/downloadermiddlewares/httpproxy.py\nindex dda6a3d2a..8c3514fd0 100644\n--- a/scrapy/downloadermiddlewares/httpproxy.py\n+++ b/scrapy/downloadermiddlewares/httpproxy.py\n@@ -9,7 +9,7 @@ from six.moves.urllib.parse import urlunparse\n \n from scrapy.utils.httpobj import urlparse_cached\n from scrapy.exceptions import NotConfigured\n-\n+from scrapy.utils.python import to_bytes\n \n class HttpProxyMiddleware(object):\n \n@@ -26,7 +26,7 @@ class HttpProxyMiddleware(object):\n         proxy_url = urlunparse((proxy_type or orig_type, hostport, '', '', '', ''))\n \n         if user:\n-            user_pass = '%s:%s' % (unquote(user), unquote(password))\n+            user_pass = to_bytes('%s:%s' % (unquote(user), unquote(password)))\n             creds = base64.b64encode(user_pass).strip()\n         else:\n             creds = None\n@@ -52,4 +52,4 @@ class HttpProxyMiddleware(object):\n         creds, proxy = self.proxies[scheme]\n         request.meta['proxy'] = proxy\n         if creds:\n-            request.headers['Proxy-Authorization'] = 'Basic ' + creds\n+            request.headers['Proxy-Authorization'] = b'Basic ' + creds\n",
+ "spans": [
+  [
+   12,
+   12
+  ],
+  [
+   29,
+   29
+  ],
+  [
+   55,
+   55
+  ]
+ ],
+ "enclosing": [
+  [
+   24,
+   34
+  ],
+  [
+   51,
+   55
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

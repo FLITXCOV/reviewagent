@@ -1,0 +1,42 @@
+{
+ "case_id": "fastapi-14",
+ "project": "fastapi",
+ "bug_id": 14,
+ "split": "test",
+ "file": "fastapi/openapi/models.py",
+ "buggy_commit": "2ddb804940bbcad4ed730b2a910c8fd3c1167127",
+ "fixed_commit": "b7d184363fad5f6b55d15ec3a3a844aa81092bbd",
+ "buggy_diff": "diff --git a/fastapi/openapi/models.py b/fastapi/openapi/models.py\nindex a045bdf70..6572c7c07 100644\n--- a/fastapi/openapi/models.py\n+++ b/fastapi/openapi/models.py\n@@ -99,7 +99,7 @@ class SchemaBase(BaseModel):\n     not_: Optional[List[Any]] = PSchema(None, alias=\"not\")  # type: ignore\n     items: Optional[Any] = None\n     properties: Optional[Dict[str, Any]] = None\n-    additionalProperties: Optional[Union[Dict[str, Any], bool]] = None\n+    additionalProperties: Optional[Union[bool, Any]] = None\n     description: Optional[str] = None\n     format: Optional[str] = None\n     default: Optional[Any] = None\n@@ -120,7 +120,7 @@ class Schema(SchemaBase):\n     not_: Optional[List[SchemaBase]] = PSchema(None, alias=\"not\")  # type: ignore\n     items: Optional[SchemaBase] = None\n     properties: Optional[Dict[str, SchemaBase]] = None\n-    additionalProperties: Optional[Union[SchemaBase, bool]] = None\n+    additionalProperties: Optional[Union[bool, SchemaBase]] = None\n \n \n class Example(BaseModel):\n@@ -220,7 +220,7 @@ class Operation(BaseModel):\n     operationId: Optional[str] = None\n     parameters: Optional[List[Union[Parameter, Reference]]] = None\n     requestBody: Optional[Union[RequestBody, Reference]] = None\n-    responses: Union[Responses, Dict[str, Response]]\n+    responses: Union[Responses, Dict[Union[str], Response]]\n     # Workaround OpenAPI recursive reference\n     callbacks: Optional[Dict[str, Union[Dict[str, Any], Reference]]] = None\n     deprecated: Optional[bool] = None\n",
+ "clean_diff": "diff --git a/fastapi/openapi/models.py b/fastapi/openapi/models.py\nindex 6572c7c07..a045bdf70 100644\n--- a/fastapi/openapi/models.py\n+++ b/fastapi/openapi/models.py\n@@ -99,7 +99,7 @@ class SchemaBase(BaseModel):\n     not_: Optional[List[Any]] = PSchema(None, alias=\"not\")  # type: ignore\n     items: Optional[Any] = None\n     properties: Optional[Dict[str, Any]] = None\n-    additionalProperties: Optional[Union[bool, Any]] = None\n+    additionalProperties: Optional[Union[Dict[str, Any], bool]] = None\n     description: Optional[str] = None\n     format: Optional[str] = None\n     default: Optional[Any] = None\n@@ -120,7 +120,7 @@ class Schema(SchemaBase):\n     not_: Optional[List[SchemaBase]] = PSchema(None, alias=\"not\")  # type: ignore\n     items: Optional[SchemaBase] = None\n     properties: Optional[Dict[str, SchemaBase]] = None\n-    additionalProperties: Optional[Union[bool, SchemaBase]] = None\n+    additionalProperties: Optional[Union[SchemaBase, bool]] = None\n \n \n class Example(BaseModel):\n@@ -220,7 +220,7 @@ class Operation(BaseModel):\n     operationId: Optional[str] = None\n     parameters: Optional[List[Union[Parameter, Reference]]] = None\n     requestBody: Optional[Union[RequestBody, Reference]] = None\n-    responses: Union[Responses, Dict[Union[str], Response]]\n+    responses: Union[Responses, Dict[str, Response]]\n     # Workaround OpenAPI recursive reference\n     callbacks: Optional[Dict[str, Union[Dict[str, Any], Reference]]] = None\n     deprecated: Optional[bool] = None\n",
+ "fix_patch": "diff --git a/fastapi/openapi/models.py b/fastapi/openapi/models.py\nindex 6572c7c07..a045bdf70 100644\n--- a/fastapi/openapi/models.py\n+++ b/fastapi/openapi/models.py\n@@ -99,7 +99,7 @@ class SchemaBase(BaseModel):\n     not_: Optional[List[Any]] = PSchema(None, alias=\"not\")  # type: ignore\n     items: Optional[Any] = None\n     properties: Optional[Dict[str, Any]] = None\n-    additionalProperties: Optional[Union[bool, Any]] = None\n+    additionalProperties: Optional[Union[Dict[str, Any], bool]] = None\n     description: Optional[str] = None\n     format: Optional[str] = None\n     default: Optional[Any] = None\n@@ -120,7 +120,7 @@ class Schema(SchemaBase):\n     not_: Optional[List[SchemaBase]] = PSchema(None, alias=\"not\")  # type: ignore\n     items: Optional[SchemaBase] = None\n     properties: Optional[Dict[str, SchemaBase]] = None\n-    additionalProperties: Optional[Union[bool, SchemaBase]] = None\n+    additionalProperties: Optional[Union[SchemaBase, bool]] = None\n \n \n class Example(BaseModel):\n@@ -220,7 +220,7 @@ class Operation(BaseModel):\n     operationId: Optional[str] = None\n     parameters: Optional[List[Union[Parameter, Reference]]] = None\n     requestBody: Optional[Union[RequestBody, Reference]] = None\n-    responses: Union[Responses, Dict[Union[str], Response]]\n+    responses: Union[Responses, Dict[str, Response]]\n     # Workaround OpenAPI recursive reference\n     callbacks: Optional[Dict[str, Union[Dict[str, Any], Reference]]] = None\n     deprecated: Optional[bool] = None\n",
+ "spans": [
+  [
+   102,
+   102
+  ],
+  [
+   123,
+   123
+  ],
+  [
+   223,
+   223
+  ]
+ ],
+ "enclosing": [
+  [
+   77,
+   113
+  ],
+  [
+   116,
+   123
+  ],
+  [
+   215,
+   228
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

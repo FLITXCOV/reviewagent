@@ -1,0 +1,171 @@
+{
+  "prompt_version": "v2",
+  "judge_model": "minimax/minimax-m3.1-flash:free",
+  "n_pairs": 20,
+  "agreement": "17/20",
+  "agreement_pct": 85.0,
+  "cohens_kappa": 0.7,
+  "judge_errors": 0,
+  "pairs": [
+    {
+      "case_id": "black-1",
+      "type": "buggy",
+      "finding": "The changes remove robust error handling for `ProcessPoolExecutor` instantiation",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding identifies the missing OSError fallback around ProcessPoolExecutor creation, which is ex"
+    },
+    {
+      "case_id": "black-10",
+      "type": "buggy",
+      "finding": "The change introduces new logic for calculating `current_column` when a tab char",
+      "human": true,
+      "judge": false,
+      "reasoning": "The finding only requests tests for the buggy tab increment of 4 and does not identify that tabs sho"
+    },
+    {
+      "case_id": "fastapi-8",
+      "type": "buggy",
+      "finding": "The change removes the `route_class_override` parameter from `add_api_route` and",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding identifies the missing `route_class_override` support, and the patch restores that param"
+    },
+    {
+      "case_id": "fastapi-8",
+      "type": "buggy",
+      "finding": "The removal of `route_class_override=type(route)` when re-adding routes (e.g., d",
+      "human": true,
+      "judge": true,
+      "reasoning": "The patch restores propagation of each route's concrete class via route_class_override=type(route), "
+    },
+    {
+      "case_id": "httpie-1",
+      "type": "buggy",
+      "finding": "The change removes the filename trimming logic, which previously ensured that ge",
+      "human": true,
+      "judge": true,
+      "reasoning": "The patch adds filesystem-aware filename trimming before checking uniqueness, directly fixing the re"
+    },
+    {
+      "case_id": "luigi-18",
+      "type": "buggy",
+      "finding": "The change removes the condition `new_status != DISABLED`. This means that if a ",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding identifies the exact defect fixed by the patch: worker-reported DISABLED updates were in"
+    },
+    {
+      "case_id": "sanic-1",
+      "type": "buggy",
+      "finding": "The change from `appendleft` to `append` reverses the execution order of respons",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding identifies the incorrect use of `append` that changed response middleware from LIFO to F"
+    },
+    {
+      "case_id": "sanic-1",
+      "type": "buggy",
+      "finding": "This significant change in middleware execution order introduces a new behavior ",
+      "human": true,
+      "judge": false,
+      "reasoning": "The finding only requests test coverage for the middleware execution-order change, whereas the produ"
+    },
+    {
+      "case_id": "scrapy-23",
+      "type": "buggy",
+      "finding": "The `base64.b64encode` function expects a bytes-like object as input. After this",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding identifies that proxy credentials remain a Python 3 string when passed to base64.b64enco"
+    },
+    {
+      "case_id": "scrapy-23",
+      "type": "buggy",
+      "finding": "The `creds` variable, which is the result of `base64.b64encode`, is a bytes obje",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding identifies the bytes/str concatenation failure in Proxy-Authorization, which the patch f"
+    },
+    {
+      "case_id": "black-1",
+      "type": "clean",
+      "finding": "The `try...except OSError` block at lines 621-623 is too narrow to catch all rel",
+      "human": false,
+      "judge": false,
+      "reasoning": "The patch handles an OSError during ProcessPoolExecutor creation, while the finding concerns a disti"
+    },
+    {
+      "case_id": "black-1",
+      "type": "clean",
+      "finding": "The new error handling branch introduced by `except OSError` (lines 623-627) is ",
+      "human": false,
+      "judge": false,
+      "reasoning": "The patch fixes an unhandled OSError when creating ProcessPoolExecutor by falling back to a None exe"
+    },
+    {
+      "case_id": "black-10",
+      "type": "clean",
+      "finding": "The change incorrectly calculates the `current_column` for tab characters. Previ",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding labels the production fix's intended handling of tabs as incorrect, whereas the patch de"
+    },
+    {
+      "case_id": "fastapi-8",
+      "type": "clean",
+      "finding": "The change introduces a new feature allowing the override of the `APIRoute` clas",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding only requests missing test coverage for the new route-class override feature, whereas th"
+    },
+    {
+      "case_id": "httpie-1",
+      "type": "clean",
+      "finding": "The newly introduced functions (`trim_filename`, `get_filename_max_length`, `tri",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding only requests test coverage for the new filename-trimming logic and does not identify th"
+    },
+    {
+      "case_id": "sanic-1",
+      "type": "clean",
+      "finding": "The change from `append` to `appendleft` on line 656 reverses the order in which",
+      "human": false,
+      "judge": false,
+      "reasoning": "The patch intentionally changes named response middleware from FIFO to LIFO to fix the production or"
+    },
+    {
+      "case_id": "scrapy-7",
+      "type": "clean",
+      "finding": "The change introduces explicit handling for form elements where the 'action' att",
+      "human": false,
+      "judge": true,
+      "reasoning": "The finding identifies the same missing production behavior that the patch adds: handling a None or "
+    },
+    {
+      "case_id": "black-12",
+      "type": "synthetic_eval",
+      "finding": "Defect in black.py around line 880",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding only vaguely labels a defect near the changed fields and does not identify the incorrect"
+    },
+    {
+      "case_id": "black-13",
+      "type": "synthetic_eval",
+      "finding": "Defect in blib2to3/pgen2/tokenize.py around line 519",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding only identifies a generic defect near the changed line and does not describe the actual "
+    },
+    {
+      "case_id": "black-2",
+      "type": "synthetic_eval",
+      "finding": "Defect in black.py around line 3119",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding only identifies a generic defect near the changed code and does not describe the missing"
+    }
+  ]
+}

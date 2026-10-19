@@ -1,0 +1,26 @@
+{
+ "case_id": "black-4",
+ "project": "black",
+ "bug_id": 4,
+ "split": "test",
+ "file": "black.py",
+ "buggy_commit": "65ea568e3301951f26e0e3b98f6d5dc80132e917",
+ "fixed_commit": "c7495b9aa098ef7a358fc74556359d21c6a4ba11",
+ "buggy_diff": "diff --git a/black.py b/black.py\nindex 05edf1a2..f7022d80 100644\n--- a/black.py\n+++ b/black.py\n@@ -1480,13 +1480,7 @@ def maybe_empty_lines(self, current_line: Line) -> Tuple[int, int]:\n         lines (two on module-level).\n         \"\"\"\n         before, after = self._maybe_empty_lines(current_line)\n-        before = (\n-            # Black should not insert empty lines at the beginning\n-            # of the file\n-            0\n-            if self.previous_line is None\n-            else before - self.previous_after\n-        )\n+        before -= self.previous_after\n         self.previous_after = after\n         self.previous_line = current_line\n         return before, after\n",
+ "clean_diff": "diff --git a/black.py b/black.py\nindex f7022d80..05edf1a2 100644\n--- a/black.py\n+++ b/black.py\n@@ -1480,7 +1480,13 @@ def maybe_empty_lines(self, current_line: Line) -> Tuple[int, int]:\n         lines (two on module-level).\n         \"\"\"\n         before, after = self._maybe_empty_lines(current_line)\n-        before -= self.previous_after\n+        before = (\n+            # Black should not insert empty lines at the beginning\n+            # of the file\n+            0\n+            if self.previous_line is None\n+            else before - self.previous_after\n+        )\n         self.previous_after = after\n         self.previous_line = current_line\n         return before, after\n",
+ "fix_patch": "diff --git a/black.py b/black.py\nindex f7022d80..05edf1a2 100644\n--- a/black.py\n+++ b/black.py\n@@ -1480,7 +1480,13 @@ def maybe_empty_lines(self, current_line: Line) -> Tuple[int, int]:\n         lines (two on module-level).\n         \"\"\"\n         before, after = self._maybe_empty_lines(current_line)\n-        before -= self.previous_after\n+        before = (\n+            # Black should not insert empty lines at the beginning\n+            # of the file\n+            0\n+            if self.previous_line is None\n+            else before - self.previous_after\n+        )\n         self.previous_after = after\n         self.previous_line = current_line\n         return before, after\n",
+ "spans": [
+  [
+   1483,
+   1483
+  ]
+ ],
+ "enclosing": [
+  [
+   1476,
+   1486
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

@@ -1,0 +1,34 @@
+{
+ "case_id": "httpie-1",
+ "project": "httpie",
+ "bug_id": 1,
+ "split": "dev",
+ "file": "httpie/downloads.py",
+ "buggy_commit": "001bda19450ad85c91345eea3cfa3991e1d492ba",
+ "fixed_commit": "5300b0b490b8db48fac30b5e32164be93dc574b7",
+ "buggy_diff": "diff --git a/httpie/downloads.py b/httpie/downloads.py\nindex 972151e..b49e335 100644\n--- a/httpie/downloads.py\n+++ b/httpie/downloads.py\n@@ -7,7 +7,6 @@ from __future__ import division\n import os\n import re\n import sys\n-import errno\n import mimetypes\n import threading\n from time import sleep, time\n@@ -136,43 +135,12 @@ def filename_from_url(url, content_type):\n     return fn\n \n \n-def trim_filename(filename, max_len):\n-    if len(filename) > max_len:\n-        trim_by = len(filename) - max_len\n-        name, ext = os.path.splitext(filename)\n-        if trim_by >= len(name):\n-            filename = filename[:-trim_by]\n-        else:\n-            filename = name[:-trim_by] + ext\n-    return filename\n-\n-\n-def get_filename_max_length(directory):\n-    try:\n-        max_len = os.pathconf(directory, 'PC_NAME_MAX')\n-    except OSError as e:\n-        if e.errno == errno.EINVAL:\n-            max_len = 255\n-        else:\n-            raise\n-    return max_len\n-\n-\n-def trim_filename_if_needed(filename, directory='.', extra=0):\n-    max_len = get_filename_max_length(directory) - extra\n-    if len(filename) > max_len:\n-        filename = trim_filename(filename, max_len)\n-    return filename\n-\n-\n def get_unique_filename(filename, exists=os.path.exists):\n     attempt = 0\n     while True:\n         suffix = '-' + str(attempt) if attempt > 0 else ''\n-        try_filename = trim_filename_if_needed(filename, extra=len(suffix))\n-        try_filename += suffix\n-        if not exists(try_filename):\n-            return try_filename\n+        if not exists(filename + suffix):\n+            return filename + suffix\n         attempt += 1\n \n \n",
+ "clean_diff": "diff --git a/httpie/downloads.py b/httpie/downloads.py\nindex b49e335..972151e 100644\n--- a/httpie/downloads.py\n+++ b/httpie/downloads.py\n@@ -7,6 +7,7 @@ from __future__ import division\n import os\n import re\n import sys\n+import errno\n import mimetypes\n import threading\n from time import sleep, time\n@@ -135,12 +136,43 @@ def filename_from_url(url, content_type):\n     return fn\n \n \n+def trim_filename(filename, max_len):\n+    if len(filename) > max_len:\n+        trim_by = len(filename) - max_len\n+        name, ext = os.path.splitext(filename)\n+        if trim_by >= len(name):\n+            filename = filename[:-trim_by]\n+        else:\n+            filename = name[:-trim_by] + ext\n+    return filename\n+\n+\n+def get_filename_max_length(directory):\n+    try:\n+        max_len = os.pathconf(directory, 'PC_NAME_MAX')\n+    except OSError as e:\n+        if e.errno == errno.EINVAL:\n+            max_len = 255\n+        else:\n+            raise\n+    return max_len\n+\n+\n+def trim_filename_if_needed(filename, directory='.', extra=0):\n+    max_len = get_filename_max_length(directory) - extra\n+    if len(filename) > max_len:\n+        filename = trim_filename(filename, max_len)\n+    return filename\n+\n+\n def get_unique_filename(filename, exists=os.path.exists):\n     attempt = 0\n     while True:\n         suffix = '-' + str(attempt) if attempt > 0 else ''\n-        if not exists(filename + suffix):\n-            return filename + suffix\n+        try_filename = trim_filename_if_needed(filename, extra=len(suffix))\n+        try_filename += suffix\n+        if not exists(try_filename):\n+            return try_filename\n         attempt += 1\n \n \n",
+ "fix_patch": "diff --git a/httpie/downloads.py b/httpie/downloads.py\nindex b49e335..972151e 100644\n--- a/httpie/downloads.py\n+++ b/httpie/downloads.py\n@@ -7,6 +7,7 @@ from __future__ import division\n import os\n import re\n import sys\n+import errno\n import mimetypes\n import threading\n from time import sleep, time\n@@ -135,12 +136,43 @@ def filename_from_url(url, content_type):\n     return fn\n \n \n+def trim_filename(filename, max_len):\n+    if len(filename) > max_len:\n+        trim_by = len(filename) - max_len\n+        name, ext = os.path.splitext(filename)\n+        if trim_by >= len(name):\n+            filename = filename[:-trim_by]\n+        else:\n+            filename = name[:-trim_by] + ext\n+    return filename\n+\n+\n+def get_filename_max_length(directory):\n+    try:\n+        max_len = os.pathconf(directory, 'PC_NAME_MAX')\n+    except OSError as e:\n+        if e.errno == errno.EINVAL:\n+            max_len = 255\n+        else:\n+            raise\n+    return max_len\n+\n+\n+def trim_filename_if_needed(filename, directory='.', extra=0):\n+    max_len = get_filename_max_length(directory) - extra\n+    if len(filename) > max_len:\n+        filename = trim_filename(filename, max_len)\n+    return filename\n+\n+\n def get_unique_filename(filename, exists=os.path.exists):\n     attempt = 0\n     while True:\n         suffix = '-' + str(attempt) if attempt > 0 else ''\n-        if not exists(filename + suffix):\n-            return filename + suffix\n+        try_filename = trim_filename_if_needed(filename, extra=len(suffix))\n+        try_filename += suffix\n+        if not exists(try_filename):\n+            return try_filename\n         attempt += 1\n \n \n",
+ "spans": [
+  [
+   9,
+   10
+  ],
+  [
+   137,
+   138
+  ],
+  [
+   142,
+   143
+  ]
+ ],
+ "enclosing": [
+  [
+   138,
+   144
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

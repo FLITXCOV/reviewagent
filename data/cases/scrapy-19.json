@@ -1,0 +1,34 @@
+{
+ "case_id": "scrapy-19",
+ "project": "scrapy",
+ "bug_id": 19,
+ "split": "test",
+ "file": "scrapy/http/cookies.py",
+ "buggy_commit": "e328a9b9dfa4fbc79c59ed4f45f757e998301c31",
+ "fixed_commit": "1f743996ff00a7b728d59b93d0967e1eb50072f0",
+ "buggy_diff": "diff --git a/scrapy/http/cookies.py b/scrapy/http/cookies.py\nindex a1e95102e..e92c3fe73 100644\n--- a/scrapy/http/cookies.py\n+++ b/scrapy/http/cookies.py\n@@ -137,29 +137,13 @@ class WrappedRequest(object):\n         \"\"\"\n         return self.request.meta.get('is_unverifiable', False)\n \n-    def get_origin_req_host(self):\n-        return urlparse_cached(self.request).hostname\n-\n-    # python3 uses attributes instead of methods\n-    @property\n-    def full_url(self):\n-        return self.get_full_url()\n-\n-    @property\n-    def host(self):\n-        return self.get_host()\n-\n-    @property\n-    def type(self):\n-        return self.get_type()\n-\n+    # python3 uses request.unverifiable\n     @property\n     def unverifiable(self):\n         return self.is_unverifiable()\n \n-    @property\n-    def origin_req_host(self):\n-        return self.get_origin_req_host()\n+    def get_origin_req_host(self):\n+        return urlparse_cached(self.request).hostname\n \n     def has_header(self, name):\n         return name in self.request.headers\n",
+ "clean_diff": "diff --git a/scrapy/http/cookies.py b/scrapy/http/cookies.py\nindex e92c3fe73..a1e95102e 100644\n--- a/scrapy/http/cookies.py\n+++ b/scrapy/http/cookies.py\n@@ -137,13 +137,29 @@ class WrappedRequest(object):\n         \"\"\"\n         return self.request.meta.get('is_unverifiable', False)\n \n-    # python3 uses request.unverifiable\n+    def get_origin_req_host(self):\n+        return urlparse_cached(self.request).hostname\n+\n+    # python3 uses attributes instead of methods\n+    @property\n+    def full_url(self):\n+        return self.get_full_url()\n+\n+    @property\n+    def host(self):\n+        return self.get_host()\n+\n+    @property\n+    def type(self):\n+        return self.get_type()\n+\n     @property\n     def unverifiable(self):\n         return self.is_unverifiable()\n \n-    def get_origin_req_host(self):\n-        return urlparse_cached(self.request).hostname\n+    @property\n+    def origin_req_host(self):\n+        return self.get_origin_req_host()\n \n     def has_header(self, name):\n         return name in self.request.headers\n",
+ "fix_patch": "diff --git a/scrapy/http/cookies.py b/scrapy/http/cookies.py\nindex e92c3fe73..a1e95102e 100644\n--- a/scrapy/http/cookies.py\n+++ b/scrapy/http/cookies.py\n@@ -137,13 +137,29 @@ class WrappedRequest(object):\n         \"\"\"\n         return self.request.meta.get('is_unverifiable', False)\n \n-    # python3 uses request.unverifiable\n+    def get_origin_req_host(self):\n+        return urlparse_cached(self.request).hostname\n+\n+    # python3 uses attributes instead of methods\n+    @property\n+    def full_url(self):\n+        return self.get_full_url()\n+\n+    @property\n+    def host(self):\n+        return self.get_host()\n+\n+    @property\n+    def type(self):\n+        return self.get_type()\n+\n     @property\n     def unverifiable(self):\n         return self.is_unverifiable()\n \n-    def get_origin_req_host(self):\n-        return urlparse_cached(self.request).hostname\n+    @property\n+    def origin_req_host(self):\n+        return self.get_origin_req_host()\n \n     def has_header(self, name):\n         return name in self.request.headers\n",
+ "spans": [
+  [
+   140,
+   140
+  ],
+  [
+   145,
+   146
+  ]
+ ],
+ "enclosing": [
+  [
+   112,
+   163
+  ],
+  [
+   145,
+   146
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

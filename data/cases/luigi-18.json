@@ -1,0 +1,26 @@
+{
+ "case_id": "luigi-18",
+ "project": "luigi",
+ "bug_id": 18,
+ "split": "dev",
+ "file": "luigi/scheduler.py",
+ "buggy_commit": "6cffbf438d023441f7f42c2019a51c62eecd9018",
+ "fixed_commit": "c521d59c5eacf6c19ce3c17a62f73e042fa0556e",
+ "buggy_diff": "diff --git a/luigi/scheduler.py b/luigi/scheduler.py\nindex edcaa5d5..7c4d4718 100644\n--- a/luigi/scheduler.py\n+++ b/luigi/scheduler.py\n@@ -402,7 +402,7 @@ class SimpleTaskState(object):\n                 self.re_enable(task)\n \n             # don't allow workers to override a scheduler disable\n-            elif task.scheduler_disable_time is not None and new_status != DISABLED:\n+            elif task.scheduler_disable_time is not None:\n                 return\n \n         if new_status == FAILED and task.can_disable() and task.status != DISABLED:\n",
+ "clean_diff": "diff --git a/luigi/scheduler.py b/luigi/scheduler.py\nindex 7c4d4718..edcaa5d5 100644\n--- a/luigi/scheduler.py\n+++ b/luigi/scheduler.py\n@@ -402,7 +402,7 @@ class SimpleTaskState(object):\n                 self.re_enable(task)\n \n             # don't allow workers to override a scheduler disable\n-            elif task.scheduler_disable_time is not None:\n+            elif task.scheduler_disable_time is not None and new_status != DISABLED:\n                 return\n \n         if new_status == FAILED and task.can_disable() and task.status != DISABLED:\n",
+ "fix_patch": "diff --git a/luigi/scheduler.py b/luigi/scheduler.py\nindex 7c4d4718..edcaa5d5 100644\n--- a/luigi/scheduler.py\n+++ b/luigi/scheduler.py\n@@ -402,7 +402,7 @@ class SimpleTaskState(object):\n                 self.re_enable(task)\n \n             # don't allow workers to override a scheduler disable\n-            elif task.scheduler_disable_time is not None:\n+            elif task.scheduler_disable_time is not None and new_status != DISABLED:\n                 return\n \n         if new_status == FAILED and task.can_disable() and task.status != DISABLED:\n",
+ "spans": [
+  [
+   405,
+   405
+  ]
+ ],
+ "enclosing": [
+  [
+   393,
+   427
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

@@ -1,0 +1,26 @@
+{
+ "case_id": "thefuck-9",
+ "project": "thefuck",
+ "bug_id": 9,
+ "split": "test",
+ "file": "thefuck/rules/git_push.py",
+ "buggy_commit": "ce6b82c92d78ae283cb3db001766b76f6647bc47",
+ "fixed_commit": "feb36ede5c518fdc3b6eddf945b2d8b1e2294d15",
+ "buggy_diff": "diff --git a/thefuck/rules/git_push.py b/thefuck/rules/git_push.py\nindex f64d2ce..0a624eb 100644\n--- a/thefuck/rules/git_push.py\n+++ b/thefuck/rules/git_push.py\n@@ -24,11 +24,7 @@ def get_new_command(command):\n         pass\n     if upstream_option_index is not -1:\n         command.script_parts.pop(upstream_option_index)\n-        try:\n-            command.script_parts.pop(upstream_option_index)\n-        except IndexError:\n-            # This happens for `git push -u`\n-            pass\n+        command.script_parts.pop(upstream_option_index)\n \n     push_upstream = command.stderr.split('\\n')[-3].strip().partition('git ')[2]\n     return replace_argument(\" \".join(command.script_parts), 'push', push_upstream)\n",
+ "clean_diff": "diff --git a/thefuck/rules/git_push.py b/thefuck/rules/git_push.py\nindex 0a624eb..f64d2ce 100644\n--- a/thefuck/rules/git_push.py\n+++ b/thefuck/rules/git_push.py\n@@ -24,7 +24,11 @@ def get_new_command(command):\n         pass\n     if upstream_option_index is not -1:\n         command.script_parts.pop(upstream_option_index)\n-        command.script_parts.pop(upstream_option_index)\n+        try:\n+            command.script_parts.pop(upstream_option_index)\n+        except IndexError:\n+            # This happens for `git push -u`\n+            pass\n \n     push_upstream = command.stderr.split('\\n')[-3].strip().partition('git ')[2]\n     return replace_argument(\" \".join(command.script_parts), 'push', push_upstream)\n",
+ "fix_patch": "diff --git a/thefuck/rules/git_push.py b/thefuck/rules/git_push.py\nindex 0a624eb..f64d2ce 100644\n--- a/thefuck/rules/git_push.py\n+++ b/thefuck/rules/git_push.py\n@@ -24,7 +24,11 @@ def get_new_command(command):\n         pass\n     if upstream_option_index is not -1:\n         command.script_parts.pop(upstream_option_index)\n-        command.script_parts.pop(upstream_option_index)\n+        try:\n+            command.script_parts.pop(upstream_option_index)\n+        except IndexError:\n+            # This happens for `git push -u`\n+            pass\n \n     push_upstream = command.stderr.split('\\n')[-3].strip().partition('git ')[2]\n     return replace_argument(\" \".join(command.script_parts), 'push', push_upstream)\n",
+ "spans": [
+  [
+   27,
+   27
+  ]
+ ],
+ "enclosing": [
+  [
+   11,
+   30
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

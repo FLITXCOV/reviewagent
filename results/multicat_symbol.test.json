@@ -1,0 +1,150 @@
+{
+ "summary": {
+  "n_buggy": 3,
+  "n_clean": 3,
+  "recall_lenient": {
+   "k": 1,
+   "n": 3,
+   "pct": 33.333333333333336,
+   "ci_low": 6.14903152761605,
+   "ci_high": 79.23450448735122
+  },
+  "recall_strict": {
+   "k": 0,
+   "n": 3,
+   "pct": 0.0,
+   "ci_low": 0.0,
+   "ci_high": 56.15060804490177
+  },
+  "by_stratum": {
+   "modification": {
+    "lenient": {
+     "k": 1,
+     "n": 3,
+     "pct": 33.333333333333336,
+     "ci_low": 6.14903152761605,
+     "ci_high": 79.23450448735122
+    },
+    "strict": {
+     "k": 0,
+     "n": 3,
+     "pct": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 56.15060804490177
+    }
+   }
+  },
+  "fp_rate_clean": {
+   "k": 0,
+   "n": 3,
+   "pct": 0.0,
+   "ci_low": 0.0,
+   "ci_high": 56.15060804490177
+  },
+  "findings_per_clean_diff": 0.0,
+  "precision_strict": {
+   "k": 0,
+   "n": 1,
+   "pct": 0.0,
+   "ci_low": 0.0,
+   "ci_high": 79.34567085261071
+  },
+  "arm": "multicat_symbol",
+  "llm_calls": 40,
+  "retries": 34,
+  "failed_nodes": 4,
+  "hunk_splits": 0,
+  "judge_errors": 0
+ },
+ "per_case": [
+  {
+   "case_id": "black-12",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 7,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 8
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 5,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 6
+   }
+  },
+  {
+   "case_id": "black-13",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "blib2to3/pgen2/tokenize.py",
+      "line_start": 519,
+      "line_end": 528,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 1.0,
+      "message": "The change restricts the promotion of the 'async' NAME token to an ASYNC keyword token to only occur when followed by 'def'. This breaks the parsing of 'async for' loops, which were previously handled. When the tokenizer encounters 'async for', it will now return 'async' as a NAME token instead of an ASYNC token, leading to a ParseError because the grammar expects an ASYNC token for asynchronous statements.",
+      "evidence": [
+       "-                     if token in ('def', 'for'):",
+       "+                     if token == 'def':"
+      ],
+      "suggested_fix": "Change the condition back to include 'for' (and also 'with', which is required for 'async with' statements): `if token in ('def', 'for', 'with'):`. The logic for setting `async_def` and `async_def_indent` should remain conditional on `token == 'def'`, but the `yield (ASYNC, ...)` must occur for all three keywords to correctly identify the 'async' keyword."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 1,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 2
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 7,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 8
+   }
+  },
+  {
+   "case_id": "black-2",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 7,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 8
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 7,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 8
+   }
+  }
+ ]
+}

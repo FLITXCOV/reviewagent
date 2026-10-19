@@ -1,0 +1,34 @@
+{
+ "case_id": "black-2",
+ "project": "black",
+ "bug_id": 2,
+ "split": "test",
+ "file": "black.py",
+ "buggy_commit": "c8ca6b2b9ff3510bee12129824cebfc2fc51e5b2",
+ "fixed_commit": "892eddacd215d685e136686b7f629ade70adca83",
+ "buggy_diff": "diff --git a/black.py b/black.py\nindex e55e4fe1..2df03f7b 100644\n--- a/black.py\n+++ b/black.py\n@@ -3116,49 +3116,18 @@ def generate_ignored_nodes(leaf: Leaf) -> Iterator[LN]:\n     \"\"\"\n     container: Optional[LN] = container_of(leaf)\n     while container is not None and container.type != token.ENDMARKER:\n-        if fmt_on(container):\n+        is_fmt_on = False\n+        for comment in list_comments(container.prefix, is_endmarker=False):\n+            if comment.value in FMT_ON:\n+                is_fmt_on = True\n+            elif comment.value in FMT_OFF:\n+                is_fmt_on = False\n+        if is_fmt_on:\n             return\n \n-        # fix for fmt: on in children\n-        if contains_fmt_on_at_column(container, leaf.column):\n-            for child in container.children:\n-                if contains_fmt_on_at_column(child, leaf.column):\n-                    return\n-                yield child\n-        else:\n-            yield container\n-            container = container.next_sibling\n-\n+        yield container\n \n-def fmt_on(container: LN) -> bool:\n-    is_fmt_on = False\n-    for comment in list_comments(container.prefix, is_endmarker=False):\n-        if comment.value in FMT_ON:\n-            is_fmt_on = True\n-        elif comment.value in FMT_OFF:\n-            is_fmt_on = False\n-    return is_fmt_on\n-\n-\n-def contains_fmt_on_at_column(container: LN, column: int) -> bool:\n-    for child in container.children:\n-        if (\n-            isinstance(child, Node)\n-            and first_leaf_column(child) == column\n-            or isinstance(child, Leaf)\n-            and child.column == column\n-        ):\n-            if fmt_on(child):\n-                return True\n-\n-    return False\n-\n-\n-def first_leaf_column(node: Node) -> Optional[int]:\n-    for child in node.children:\n-        if isinstance(child, Leaf):\n-            return child.column\n-    return None\n+        container = container.next_sibling\n \n \n def maybe_make_parens_invisible_in_atom(node: LN, parent: LN) -> bool:\n",
+ "clean_diff": "diff --git a/black.py b/black.py\nindex 2df03f7b..e55e4fe1 100644\n--- a/black.py\n+++ b/black.py\n@@ -3116,18 +3116,49 @@ def generate_ignored_nodes(leaf: Leaf) -> Iterator[LN]:\n     \"\"\"\n     container: Optional[LN] = container_of(leaf)\n     while container is not None and container.type != token.ENDMARKER:\n-        is_fmt_on = False\n-        for comment in list_comments(container.prefix, is_endmarker=False):\n-            if comment.value in FMT_ON:\n-                is_fmt_on = True\n-            elif comment.value in FMT_OFF:\n-                is_fmt_on = False\n-        if is_fmt_on:\n+        if fmt_on(container):\n             return\n \n-        yield container\n+        # fix for fmt: on in children\n+        if contains_fmt_on_at_column(container, leaf.column):\n+            for child in container.children:\n+                if contains_fmt_on_at_column(child, leaf.column):\n+                    return\n+                yield child\n+        else:\n+            yield container\n+            container = container.next_sibling\n+\n \n-        container = container.next_sibling\n+def fmt_on(container: LN) -> bool:\n+    is_fmt_on = False\n+    for comment in list_comments(container.prefix, is_endmarker=False):\n+        if comment.value in FMT_ON:\n+            is_fmt_on = True\n+        elif comment.value in FMT_OFF:\n+            is_fmt_on = False\n+    return is_fmt_on\n+\n+\n+def contains_fmt_on_at_column(container: LN, column: int) -> bool:\n+    for child in container.children:\n+        if (\n+            isinstance(child, Node)\n+            and first_leaf_column(child) == column\n+            or isinstance(child, Leaf)\n+            and child.column == column\n+        ):\n+            if fmt_on(child):\n+                return True\n+\n+    return False\n+\n+\n+def first_leaf_column(node: Node) -> Optional[int]:\n+    for child in node.children:\n+        if isinstance(child, Leaf):\n+            return child.column\n+    return None\n \n \n def maybe_make_parens_invisible_in_atom(node: LN, parent: LN) -> bool:\n",
+ "fix_patch": "diff --git a/black.py b/black.py\nindex 2df03f7b..e55e4fe1 100644\n--- a/black.py\n+++ b/black.py\n@@ -3116,18 +3116,49 @@ def generate_ignored_nodes(leaf: Leaf) -> Iterator[LN]:\n     \"\"\"\n     container: Optional[LN] = container_of(leaf)\n     while container is not None and container.type != token.ENDMARKER:\n-        is_fmt_on = False\n-        for comment in list_comments(container.prefix, is_endmarker=False):\n-            if comment.value in FMT_ON:\n-                is_fmt_on = True\n-            elif comment.value in FMT_OFF:\n-                is_fmt_on = False\n-        if is_fmt_on:\n+        if fmt_on(container):\n             return\n \n-        yield container\n+        # fix for fmt: on in children\n+        if contains_fmt_on_at_column(container, leaf.column):\n+            for child in container.children:\n+                if contains_fmt_on_at_column(child, leaf.column):\n+                    return\n+                yield child\n+        else:\n+            yield container\n+            container = container.next_sibling\n+\n \n-        container = container.next_sibling\n+def fmt_on(container: LN) -> bool:\n+    is_fmt_on = False\n+    for comment in list_comments(container.prefix, is_endmarker=False):\n+        if comment.value in FMT_ON:\n+            is_fmt_on = True\n+        elif comment.value in FMT_OFF:\n+            is_fmt_on = False\n+    return is_fmt_on\n+\n+\n+def contains_fmt_on_at_column(container: LN, column: int) -> bool:\n+    for child in container.children:\n+        if (\n+            isinstance(child, Node)\n+            and first_leaf_column(child) == column\n+            or isinstance(child, Leaf)\n+            and child.column == column\n+        ):\n+            if fmt_on(child):\n+                return True\n+\n+    return False\n+\n+\n+def first_leaf_column(node: Node) -> Optional[int]:\n+    for child in node.children:\n+        if isinstance(child, Leaf):\n+            return child.column\n+    return None\n \n \n def maybe_make_parens_invisible_in_atom(node: LN, parent: LN) -> bool:\n",
+ "spans": [
+  [
+   3119,
+   3125
+  ],
+  [
+   3128,
+   3128
+  ],
+  [
+   3130,
+   3130
+  ]
+ ],
+ "enclosing": [
+  [
+   3112,
+   3130
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

@@ -1,0 +1,26 @@
+{
+ "case_id": "luigi-33",
+ "project": "luigi",
+ "bug_id": 33,
+ "split": "test",
+ "file": "luigi/task.py",
+ "buggy_commit": "a7c0662eab78fd226fd7ef6b4461d7199336cbb1",
+ "fixed_commit": "fccb631a14e1d52138d39f06004be14ca8f3337d",
+ "buggy_diff": "diff --git a/luigi/task.py b/luigi/task.py\nindex 67a786ae..c5ddbeb6 100644\n--- a/luigi/task.py\n+++ b/luigi/task.py\n@@ -331,7 +331,7 @@ class Task(object):\n         exc_desc = '%s[args=%s, kwargs=%s]' % (task_name, args, kwargs)\n \n         # Fill in the positional arguments\n-        positional_params = [(n, p) for n, p in params if not p.is_global]\n+        positional_params = [(n, p) for n, p in params if p.significant]\n         for i, arg in enumerate(args):\n             if i >= len(positional_params):\n                 raise parameter.UnknownParameterException('%s: takes at most %d parameters (%d given)' % (exc_desc, len(positional_params), len(args)))\n",
+ "clean_diff": "diff --git a/luigi/task.py b/luigi/task.py\nindex c5ddbeb6..67a786ae 100644\n--- a/luigi/task.py\n+++ b/luigi/task.py\n@@ -331,7 +331,7 @@ class Task(object):\n         exc_desc = '%s[args=%s, kwargs=%s]' % (task_name, args, kwargs)\n \n         # Fill in the positional arguments\n-        positional_params = [(n, p) for n, p in params if p.significant]\n+        positional_params = [(n, p) for n, p in params if not p.is_global]\n         for i, arg in enumerate(args):\n             if i >= len(positional_params):\n                 raise parameter.UnknownParameterException('%s: takes at most %d parameters (%d given)' % (exc_desc, len(positional_params), len(args)))\n",
+ "fix_patch": "diff --git a/luigi/task.py b/luigi/task.py\nindex c5ddbeb6..67a786ae 100644\n--- a/luigi/task.py\n+++ b/luigi/task.py\n@@ -331,7 +331,7 @@ class Task(object):\n         exc_desc = '%s[args=%s, kwargs=%s]' % (task_name, args, kwargs)\n \n         # Fill in the positional arguments\n-        positional_params = [(n, p) for n, p in params if p.significant]\n+        positional_params = [(n, p) for n, p in params if not p.is_global]\n         for i, arg in enumerate(args):\n             if i >= len(positional_params):\n                 raise parameter.UnknownParameterException('%s: takes at most %d parameters (%d given)' % (exc_desc, len(positional_params), len(args)))\n",
+ "spans": [
+  [
+   334,
+   334
+  ]
+ ],
+ "enclosing": [
+  [
+   313,
+   363
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

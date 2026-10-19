@@ -1,0 +1,34 @@
+{
+ "case_id": "scrapy-10",
+ "project": "scrapy",
+ "bug_id": 10,
+ "split": "test",
+ "file": "scrapy/downloadermiddlewares/redirect.py",
+ "buggy_commit": "6cc83c041eac36e7688dbd9c4c55487a43b622e0",
+ "fixed_commit": "db408528928b2d15043593032913fe40d6eb6783",
+ "buggy_diff": "diff --git a/scrapy/downloadermiddlewares/redirect.py b/scrapy/downloadermiddlewares/redirect.py\nindex db276eefb..4ed7e4c24 100644\n--- a/scrapy/downloadermiddlewares/redirect.py\n+++ b/scrapy/downloadermiddlewares/redirect.py\n@@ -1,10 +1,9 @@\n import logging\n from six.moves.urllib.parse import urljoin\n \n-from w3lib.url import safe_url_string\n-\n from scrapy.http import HtmlResponse\n from scrapy.utils.response import get_meta_refresh\n+from scrapy.utils.python import to_native_str\n from scrapy.exceptions import IgnoreRequest, NotConfigured\n \n logger = logging.getLogger(__name__)\n@@ -66,7 +65,8 @@ class RedirectMiddleware(BaseRedirectMiddleware):\n         if 'Location' not in response.headers or response.status not in allowed_status:\n             return response\n \n-        location = safe_url_string(response.headers['location'])\n+        # HTTP header is ascii or latin1, redirected url will be percent-encoded utf-8\n+        location = to_native_str(response.headers['location'].decode('latin1'))\n \n         redirected_url = urljoin(request.url, location)\n \n",
+ "clean_diff": "diff --git a/scrapy/downloadermiddlewares/redirect.py b/scrapy/downloadermiddlewares/redirect.py\nindex 4ed7e4c24..db276eefb 100644\n--- a/scrapy/downloadermiddlewares/redirect.py\n+++ b/scrapy/downloadermiddlewares/redirect.py\n@@ -1,9 +1,10 @@\n import logging\n from six.moves.urllib.parse import urljoin\n \n+from w3lib.url import safe_url_string\n+\n from scrapy.http import HtmlResponse\n from scrapy.utils.response import get_meta_refresh\n-from scrapy.utils.python import to_native_str\n from scrapy.exceptions import IgnoreRequest, NotConfigured\n \n logger = logging.getLogger(__name__)\n@@ -65,8 +66,7 @@ class RedirectMiddleware(BaseRedirectMiddleware):\n         if 'Location' not in response.headers or response.status not in allowed_status:\n             return response\n \n-        # HTTP header is ascii or latin1, redirected url will be percent-encoded utf-8\n-        location = to_native_str(response.headers['location'].decode('latin1'))\n+        location = safe_url_string(response.headers['location'])\n \n         redirected_url = urljoin(request.url, location)\n \n",
+ "fix_patch": "diff --git a/scrapy/downloadermiddlewares/redirect.py b/scrapy/downloadermiddlewares/redirect.py\nindex 4ed7e4c24..db276eefb 100644\n--- a/scrapy/downloadermiddlewares/redirect.py\n+++ b/scrapy/downloadermiddlewares/redirect.py\n@@ -1,9 +1,10 @@\n import logging\n from six.moves.urllib.parse import urljoin\n \n+from w3lib.url import safe_url_string\n+\n from scrapy.http import HtmlResponse\n from scrapy.utils.response import get_meta_refresh\n-from scrapy.utils.python import to_native_str\n from scrapy.exceptions import IgnoreRequest, NotConfigured\n \n logger = logging.getLogger(__name__)\n@@ -65,8 +66,7 @@ class RedirectMiddleware(BaseRedirectMiddleware):\n         if 'Location' not in response.headers or response.status not in allowed_status:\n             return response\n \n-        # HTTP header is ascii or latin1, redirected url will be percent-encoded utf-8\n-        location = to_native_str(response.headers['location'].decode('latin1'))\n+        location = safe_url_string(response.headers['location'])\n \n         redirected_url = urljoin(request.url, location)\n \n",
+ "spans": [
+  [
+   3,
+   4
+  ],
+  [
+   6,
+   6
+  ],
+  [
+   68,
+   69
+  ]
+ ],
+ "enclosing": [
+  [
+   57,
+   78
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

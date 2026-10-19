@@ -1,0 +1,321 @@
+{
+ "summary": {
+  "n_buggy": 10,
+  "n_clean": 10,
+  "recall_lenient": {
+   "k": 0,
+   "n": 10,
+   "pct": 0.0,
+   "ci_low": 0.0,
+   "ci_high": 27.75401687666166
+  },
+  "recall_strict": {
+   "k": 0,
+   "n": 10,
+   "pct": 0.0,
+   "ci_low": 0.0,
+   "ci_high": 27.75401687666166
+  },
+  "by_stratum": {
+   "modification": {
+    "lenient": {
+     "k": 0,
+     "n": 10,
+     "pct": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 27.75401687666166
+    },
+    "strict": {
+     "k": 0,
+     "n": 10,
+     "pct": 0.0,
+     "ci_low": 0.0,
+     "ci_high": 27.75401687666166
+    }
+   }
+  },
+  "fp_rate_clean": {
+   "k": 0,
+   "n": 10,
+   "pct": 0.0,
+   "ci_low": 0.0,
+   "ci_high": 27.75401687666166
+  },
+  "findings_per_clean_diff": 0.0,
+  "precision_strict": {
+   "k": 0,
+   "n": 0,
+   "pct": 0.0,
+   "ci_low": 0.0,
+   "ci_high": 0.0
+  },
+  "arm": "multicat_symbol",
+  "llm_calls": 100,
+  "retries": 80,
+  "failed_nodes": 20,
+  "hunk_splits": 0,
+  "judge_errors": 0
+ },
+ "per_case": [
+  {
+   "case_id": "black-1",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  },
+  {
+   "case_id": "black-10",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  },
+  {
+   "case_id": "fastapi-8",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  },
+  {
+   "case_id": "httpie-1",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  },
+  {
+   "case_id": "luigi-18",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  },
+  {
+   "case_id": "sanic-1",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  },
+  {
+   "case_id": "scrapy-23",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  },
+  {
+   "case_id": "scrapy-7",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  },
+  {
+   "case_id": "thefuck-22",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  },
+  {
+   "case_id": "tqdm-4",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [
+     "multicat[0]"
+    ],
+    "retries": 4,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 5
+   }
+  }
+ ]
+}

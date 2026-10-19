@@ -1,0 +1,38 @@
+{
+ "case_id": "httpie-5",
+ "project": "httpie",
+ "bug_id": 5,
+ "split": "test",
+ "file": "httpie/cli.py",
+ "buggy_commit": "16df8848e81eefac830f407e4b985f42b52970da",
+ "fixed_commit": "90af1f742230831792d74d303d1e7ce56c96d4bd",
+ "buggy_diff": "diff --git a/httpie/cli.py b/httpie/cli.py\nindex 29a55f6..22797a5 100644\n--- a/httpie/cli.py\n+++ b/httpie/cli.py\n@@ -36,24 +36,14 @@ class KeyValueType(object):\n     \"\"\"A type used with `argparse`.\"\"\"\n     def __init__(self, *separators):\n         self.separators = separators\n-        self.escapes = ['\\\\\\\\' + sep for sep in separators]\n \n     def __call__(self, string):\n         found = {}\n-        found_escapes = []\n-        for esc in self.escapes:\n-            found_escapes += [m.span() for m in re.finditer(esc, string)]\n         for sep in self.separators:\n-            matches = re.finditer(sep, string)\n-            for match in matches:\n-                start, end = match.span()\n-                inside_escape = False\n-                for estart, eend in found_escapes:\n-                    if start >= estart and end <= eend:\n-                        inside_escape = True\n-                        break\n-                if not inside_escape:\n-                    found[start] = sep\n+            regex = '[^\\\\\\\\]' + sep\n+            match = re.search(regex, string)\n+            if match:\n+                found[match.start() + 1] = sep\n \n         if not found:\n             #noinspection PyExceptionInherit\n",
+ "clean_diff": "diff --git a/httpie/cli.py b/httpie/cli.py\nindex 22797a5..29a55f6 100644\n--- a/httpie/cli.py\n+++ b/httpie/cli.py\n@@ -36,14 +36,24 @@ class KeyValueType(object):\n     \"\"\"A type used with `argparse`.\"\"\"\n     def __init__(self, *separators):\n         self.separators = separators\n+        self.escapes = ['\\\\\\\\' + sep for sep in separators]\n \n     def __call__(self, string):\n         found = {}\n+        found_escapes = []\n+        for esc in self.escapes:\n+            found_escapes += [m.span() for m in re.finditer(esc, string)]\n         for sep in self.separators:\n-            regex = '[^\\\\\\\\]' + sep\n-            match = re.search(regex, string)\n-            if match:\n-                found[match.start() + 1] = sep\n+            matches = re.finditer(sep, string)\n+            for match in matches:\n+                start, end = match.span()\n+                inside_escape = False\n+                for estart, eend in found_escapes:\n+                    if start >= estart and end <= eend:\n+                        inside_escape = True\n+                        break\n+                if not inside_escape:\n+                    found[start] = sep\n \n         if not found:\n             #noinspection PyExceptionInherit\n",
+ "fix_patch": "diff --git a/httpie/cli.py b/httpie/cli.py\nindex 22797a5..29a55f6 100644\n--- a/httpie/cli.py\n+++ b/httpie/cli.py\n@@ -36,14 +36,24 @@ class KeyValueType(object):\n     \"\"\"A type used with `argparse`.\"\"\"\n     def __init__(self, *separators):\n         self.separators = separators\n+        self.escapes = ['\\\\\\\\' + sep for sep in separators]\n \n     def __call__(self, string):\n         found = {}\n+        found_escapes = []\n+        for esc in self.escapes:\n+            found_escapes += [m.span() for m in re.finditer(esc, string)]\n         for sep in self.separators:\n-            regex = '[^\\\\\\\\]' + sep\n-            match = re.search(regex, string)\n-            if match:\n-                found[match.start() + 1] = sep\n+            matches = re.finditer(sep, string)\n+            for match in matches:\n+                start, end = match.span()\n+                inside_escape = False\n+                for estart, eend in found_escapes:\n+                    if start >= estart and end <= eend:\n+                        inside_escape = True\n+                        break\n+                if not inside_escape:\n+                    found[start] = sep\n \n         if not found:\n             #noinspection PyExceptionInherit\n",
+ "spans": [
+  [
+   38,
+   39
+  ],
+  [
+   41,
+   42
+  ],
+  [
+   43,
+   46
+  ]
+ ],
+ "enclosing": [
+  [
+   37,
+   38
+  ],
+  [
+   40,
+   63
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

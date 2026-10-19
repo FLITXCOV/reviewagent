@@ -1,0 +1,195 @@
+{
+ "summary": {
+  "n_buggy": 3,
+  "n_clean": 3,
+  "recall_lenient": {
+   "k": 2,
+   "n": 3,
+   "pct": 66.66666666666667,
+   "ci_low": 20.76549551264879,
+   "ci_high": 93.85096847238394
+  },
+  "recall_strict": {
+   "k": 1,
+   "n": 3,
+   "pct": 33.333333333333336,
+   "ci_low": 6.14903152761605,
+   "ci_high": 79.23450448735122
+  },
+  "by_stratum": {
+   "modification": {
+    "lenient": {
+     "k": 2,
+     "n": 3,
+     "pct": 66.66666666666667,
+     "ci_low": 20.76549551264879,
+     "ci_high": 93.85096847238394
+    },
+    "strict": {
+     "k": 1,
+     "n": 3,
+     "pct": 33.333333333333336,
+     "ci_low": 6.14903152761605,
+     "ci_high": 79.23450448735122
+    }
+   }
+  },
+  "fp_rate_clean": {
+   "k": 1,
+   "n": 3,
+   "pct": 33.333333333333336,
+   "ci_low": 6.14903152761605,
+   "ci_high": 79.23450448735122
+  },
+  "findings_per_clean_diff": 0.3333333333333333,
+  "precision_strict": {
+   "k": 1,
+   "n": 4,
+   "pct": 25.0,
+   "ci_low": 4.558606264463622,
+   "ci_high": 69.93639475573634
+  },
+  "arm": "multicat_none",
+  "llm_calls": 9,
+  "retries": 3,
+  "failed_nodes": 0,
+  "hunk_splits": 0,
+  "judge_errors": 0
+ },
+ "per_case": [
+  {
+   "case_id": "black-12",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "black.py",
+      "line_start": 981,
+      "line_end": 988,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 0.95,
+      "message": "Replacing `_lambda_argument_depths` with a simple counter removes the check that the colon is at the lambda's bracket depth (`self._lambda_argument_depths[-1] == self.depth`). Any colon inside brackets in a lambda default argument (for example, in a dictionary default `lambda x={1: 2}: x` or a slice `lambda x=a[:1]: x`) will trigger this condition prematurely. This prematurely decrements `self.depth`, decrements `self._lambda_arguments` to 0, and causes the actual lambda colon to be missed, corrupting depth tracking.",
+      "evidence": [
+       "if self._lambda_arguments and leaf.type == token.COLON:",
+       "    self.depth -= 1",
+       "    self._lambda_arguments -= 1"
+      ],
+      "suggested_fix": "Restore tracking of lambda depths with a stack (`List[int]`) and verify `self._lambda_argument_depths and self._lambda_argument_depths[-1] == self.depth` before decrementing."
+     },
+     {
+      "file": "black.py",
+      "line_start": 959,
+      "line_end": 966,
+      "category": "logic",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "Replacing `_for_loop_depths` with a simple counter removes the check that the `in` token is at the expected loop bracket depth. If an `in` token appears inside brackets within the loop target expression (for example, in an index expression like `for a[x in y] in z:`), it will match prematurely, decrementing `self.depth` and `self._for_loop_variable` at the wrong depth and causing the actual loop `in` delimiter to be ignored.",
+      "evidence": [
+       "if self._for_loop_variable and leaf.type == token.NAME and leaf.value == \"in\":",
+       "    self.depth -= 1",
+       "    self._for_loop_variable -= 1"
+      ],
+      "suggested_fix": "Restore tracking of for-loop depths with a stack (`List[int]`) and verify `self._for_loop_depths and self._for_loop_depths[-1] == self.depth` before decrementing."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 1,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 2
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "black-13",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "blib2to3/pgen2/tokenize.py",
+      "line_start": 519,
+      "line_end": 525,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 0.95,
+      "message": "Changing `if token in ('def', 'for'):` to `if token == 'def':` prevents `async` immediately preceding `for` (e.g. in async comprehensions such as `[x async for x in y]`) from being recognized and emitted as an `ASYNC` token. As a result, `async` will be emitted as a regular `NAME` token, causing a parse error when the grammar expects `ASYNC 'for'`.",
+      "evidence": [
+       "if token == 'def':",
+       "async_def = True",
+       "async_def_indent = indents[-1]"
+      ],
+      "suggested_fix": "if token in ('def', 'for'):\n    if (stashed\n            and stashed[0] == NAME\n            and stashed[1] == 'async'):\n        if token == 'def':\n            async_def = True\n            async_def_indent = indents[-1]"
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 1,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 2
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "black-2",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 1,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 2
+   },
+   "clean": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "black.py",
+      "line_start": 3123,
+      "line_end": 3130,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 0.95,
+      "message": "When `contains_fmt_on_at_column(container, leaf.column)` is True, `contains_fmt_on_at_column(child, leaf.column)` is invoked on each child. If `child` is a `Leaf`, line 3144 crashes with `AttributeError` because `Leaf` has no `children` attribute. Furthermore, even if `child` is a `Node`, `contains_fmt_on_at_column` inspects `child.children` rather than `child` itself, so `# fmt: on` on `child` is never detected. As a consequence, the loop does not return, and because `container = container.next_sibling` was placed in the `else` branch (line 3130), `container` is never advanced, resulting in an infinite `while` loop.",
+      "evidence": [
+       "if contains_fmt_on_at_column(container, leaf.column):",
+       "    for child in container.children:",
+       "        if contains_fmt_on_at_column(child, leaf.column):",
+       "            return",
+       "        yield child",
+       "else:",
+       "    yield container",
+       "    container = container.next_sibling"
+      ],
+      "suggested_fix": "Check whether `child` itself has `# fmt: on` (e.g. using `fmt_on(child)` and verifying the column) rather than calling `contains_fmt_on_at_column(child, leaf.column)`. Ensure `container = container.next_sibling` is always executed if the `for` loop finishes without returning, or return when the matching child is reached."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  }
+ ]
+}

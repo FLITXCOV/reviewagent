@@ -1,0 +1,38 @@
+{
+ "case_id": "scrapy-7",
+ "project": "scrapy",
+ "bug_id": 7,
+ "split": "dev",
+ "file": "scrapy/http/request/form.py",
+ "buggy_commit": "e1ceaf3b5fa29326f032c4ed3f50943384b9e63d",
+ "fixed_commit": "074caf434e255bc96f106e57e3e288028f372485",
+ "buggy_diff": "diff --git a/scrapy/http/request/form.py b/scrapy/http/request/form.py\nindex 905d8412f..2862dc096 100644\n--- a/scrapy/http/request/form.py\n+++ b/scrapy/http/request/form.py\n@@ -5,13 +5,10 @@ This module implements the FormRequest class which is a more convenient class\n See documentation in docs/topics/request-response.rst\n \"\"\"\n \n-import six\n from six.moves.urllib.parse import urljoin, urlencode\n-\n import lxml.html\n from parsel.selector import create_root_node\n-from w3lib.html import strip_html5_whitespace\n-\n+import six\n from scrapy.http.request import Request\n from scrapy.utils.python import to_bytes, is_listlike\n from scrapy.utils.response import get_base_url\n@@ -54,10 +51,7 @@ class FormRequest(Request):\n \n def _get_form_url(form, url):\n     if url is None:\n-        action = form.get('action')\n-        if action is None:\n-            return form.base_url\n-        return urljoin(form.base_url, strip_html5_whitespace(action))\n+        return urljoin(form.base_url, form.action)\n     return urljoin(form.base_url, url)\n \n \n",
+ "clean_diff": "diff --git a/scrapy/http/request/form.py b/scrapy/http/request/form.py\nindex 2862dc096..905d8412f 100644\n--- a/scrapy/http/request/form.py\n+++ b/scrapy/http/request/form.py\n@@ -5,10 +5,13 @@ This module implements the FormRequest class which is a more convenient class\n See documentation in docs/topics/request-response.rst\n \"\"\"\n \n+import six\n from six.moves.urllib.parse import urljoin, urlencode\n+\n import lxml.html\n from parsel.selector import create_root_node\n-import six\n+from w3lib.html import strip_html5_whitespace\n+\n from scrapy.http.request import Request\n from scrapy.utils.python import to_bytes, is_listlike\n from scrapy.utils.response import get_base_url\n@@ -51,7 +54,10 @@ class FormRequest(Request):\n \n def _get_form_url(form, url):\n     if url is None:\n-        return urljoin(form.base_url, form.action)\n+        action = form.get('action')\n+        if action is None:\n+            return form.base_url\n+        return urljoin(form.base_url, strip_html5_whitespace(action))\n     return urljoin(form.base_url, url)\n \n \n",
+ "fix_patch": "diff --git a/scrapy/http/request/form.py b/scrapy/http/request/form.py\nindex 2862dc096..905d8412f 100644\n--- a/scrapy/http/request/form.py\n+++ b/scrapy/http/request/form.py\n@@ -5,10 +5,13 @@ This module implements the FormRequest class which is a more convenient class\n See documentation in docs/topics/request-response.rst\n \"\"\"\n \n+import six\n from six.moves.urllib.parse import urljoin, urlencode\n+\n import lxml.html\n from parsel.selector import create_root_node\n-import six\n+from w3lib.html import strip_html5_whitespace\n+\n from scrapy.http.request import Request\n from scrapy.utils.python import to_bytes, is_listlike\n from scrapy.utils.response import get_base_url\n@@ -51,7 +54,10 @@ class FormRequest(Request):\n \n def _get_form_url(form, url):\n     if url is None:\n-        return urljoin(form.base_url, form.action)\n+        action = form.get('action')\n+        if action is None:\n+            return form.base_url\n+        return urljoin(form.base_url, strip_html5_whitespace(action))\n     return urljoin(form.base_url, url)\n \n \n",
+ "spans": [
+  [
+   7,
+   8
+  ],
+  [
+   8,
+   9
+  ],
+  [
+   11,
+   11
+  ],
+  [
+   54,
+   54
+  ]
+ ],
+ "enclosing": [
+  [
+   52,
+   55
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

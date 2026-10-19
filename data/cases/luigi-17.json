@@ -1,0 +1,26 @@
+{
+ "case_id": "luigi-17",
+ "project": "luigi",
+ "bug_id": 17,
+ "split": "test",
+ "file": "luigi/interface.py",
+ "buggy_commit": "c39922350cba3a93c96c2ed223283bf8cf315a7d",
+ "fixed_commit": "e38392a1381dd8daee0f180f0ac7f651edb88e0c",
+ "buggy_diff": "diff --git a/luigi/interface.py b/luigi/interface.py\nindex d978e41a..2a4de9f9 100644\n--- a/luigi/interface.py\n+++ b/luigi/interface.py\n@@ -131,7 +131,7 @@ class core(task.Config):\n class _WorkerSchedulerFactory(object):\n \n     def create_local_scheduler(self):\n-        return scheduler.CentralPlannerScheduler(prune_on_get_work=True, record_task_history=False)\n+        return scheduler.CentralPlannerScheduler(prune_on_get_work=True)\n \n     def create_remote_scheduler(self, url):\n         return rpc.RemoteScheduler(url)\n",
+ "clean_diff": "diff --git a/luigi/interface.py b/luigi/interface.py\nindex 2a4de9f9..d978e41a 100644\n--- a/luigi/interface.py\n+++ b/luigi/interface.py\n@@ -131,7 +131,7 @@ class core(task.Config):\n class _WorkerSchedulerFactory(object):\n \n     def create_local_scheduler(self):\n-        return scheduler.CentralPlannerScheduler(prune_on_get_work=True)\n+        return scheduler.CentralPlannerScheduler(prune_on_get_work=True, record_task_history=False)\n \n     def create_remote_scheduler(self, url):\n         return rpc.RemoteScheduler(url)\n",
+ "fix_patch": "diff --git a/luigi/interface.py b/luigi/interface.py\nindex 2a4de9f9..d978e41a 100644\n--- a/luigi/interface.py\n+++ b/luigi/interface.py\n@@ -131,7 +131,7 @@ class core(task.Config):\n class _WorkerSchedulerFactory(object):\n \n     def create_local_scheduler(self):\n-        return scheduler.CentralPlannerScheduler(prune_on_get_work=True)\n+        return scheduler.CentralPlannerScheduler(prune_on_get_work=True, record_task_history=False)\n \n     def create_remote_scheduler(self, url):\n         return rpc.RemoteScheduler(url)\n",
+ "spans": [
+  [
+   134,
+   134
+  ]
+ ],
+ "enclosing": [
+  [
+   133,
+   134
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

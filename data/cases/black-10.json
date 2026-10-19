@@ -1,0 +1,30 @@
+{
+ "case_id": "black-10",
+ "project": "black",
+ "bug_id": 10,
+ "split": "dev",
+ "file": "blib2to3/pgen2/driver.py",
+ "buggy_commit": "f6643c4f0cfbae1f2493fdfce46cfbae3d26f46b",
+ "fixed_commit": "66aa676278948368dff251dffd58c850cb8b889e",
+ "buggy_diff": "diff --git a/blib2to3/pgen2/driver.py b/blib2to3/pgen2/driver.py\nindex 6626c055..72d9f478 100644\n--- a/blib2to3/pgen2/driver.py\n+++ b/blib2to3/pgen2/driver.py\n@@ -131,8 +131,10 @@ def _partially_consume_prefix(self, prefix, column):\n                     current_line = \"\"\n                     current_column = 0\n                     wait_for_nl = False\n-            elif char in ' \\t':\n+            elif char == ' ':\n                 current_column += 1\n+            elif char == '\\t':\n+                current_column += 4\n             elif char == '\\n':\n                 # unexpected empty line\n                 current_column = 0\n",
+ "clean_diff": "diff --git a/blib2to3/pgen2/driver.py b/blib2to3/pgen2/driver.py\nindex 72d9f478..6626c055 100644\n--- a/blib2to3/pgen2/driver.py\n+++ b/blib2to3/pgen2/driver.py\n@@ -131,10 +131,8 @@ def _partially_consume_prefix(self, prefix, column):\n                     current_line = \"\"\n                     current_column = 0\n                     wait_for_nl = False\n-            elif char == ' ':\n+            elif char in ' \\t':\n                 current_column += 1\n-            elif char == '\\t':\n-                current_column += 4\n             elif char == '\\n':\n                 # unexpected empty line\n                 current_column = 0\n",
+ "fix_patch": "diff --git a/blib2to3/pgen2/driver.py b/blib2to3/pgen2/driver.py\nindex 72d9f478..6626c055 100644\n--- a/blib2to3/pgen2/driver.py\n+++ b/blib2to3/pgen2/driver.py\n@@ -131,10 +131,8 @@ def _partially_consume_prefix(self, prefix, column):\n                     current_line = \"\"\n                     current_column = 0\n                     wait_for_nl = False\n-            elif char == ' ':\n+            elif char in ' \\t':\n                 current_column += 1\n-            elif char == '\\t':\n-                current_column += 4\n             elif char == '\\n':\n                 # unexpected empty line\n                 current_column = 0\n",
+ "spans": [
+  [
+   134,
+   134
+  ],
+  [
+   136,
+   137
+  ]
+ ],
+ "enclosing": [
+  [
+   117,
+   144
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

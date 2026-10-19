@@ -1,0 +1,30 @@
+{
+ "case_id": "fastapi-3",
+ "project": "fastapi",
+ "bug_id": 3,
+ "split": "test",
+ "file": "fastapi/routing.py",
+ "buggy_commit": "869c7389e22dc9ad659940fa271da76c4f3ba3b1",
+ "fixed_commit": "aea04ee32ee1942e6e1a904527bb8da6ba76abd9",
+ "buggy_diff": "diff --git a/fastapi/routing.py b/fastapi/routing.py\nindex b90935e15..b36104869 100644\n--- a/fastapi/routing.py\n+++ b/fastapi/routing.py\n@@ -48,28 +48,6 @@ except ImportError:  # pragma: nocover\n     from pydantic.fields import Field as ModelField  # type: ignore\n \n \n-def _prepare_response_content(\n-    res: Any, *, by_alias: bool = True, exclude_unset: bool\n-) -> Any:\n-    if isinstance(res, BaseModel):\n-        if PYDANTIC_1:\n-            return res.dict(by_alias=by_alias, exclude_unset=exclude_unset)\n-        else:\n-            return res.dict(\n-                by_alias=by_alias, skip_defaults=exclude_unset\n-            )  # pragma: nocover\n-    elif isinstance(res, list):\n-        return [\n-            _prepare_response_content(item, exclude_unset=exclude_unset) for item in res\n-        ]\n-    elif isinstance(res, dict):\n-        return {\n-            k: _prepare_response_content(v, exclude_unset=exclude_unset)\n-            for k, v in res.items()\n-        }\n-    return res\n-\n-\n async def serialize_response(\n     *,\n     field: ModelField = None,\n@@ -82,9 +60,13 @@ async def serialize_response(\n ) -> Any:\n     if field:\n         errors = []\n-        response_content = _prepare_response_content(\n-            response_content, by_alias=by_alias, exclude_unset=exclude_unset\n-        )\n+        if exclude_unset and isinstance(response_content, BaseModel):\n+            if PYDANTIC_1:\n+                response_content = response_content.dict(exclude_unset=exclude_unset)\n+            else:\n+                response_content = response_content.dict(\n+                    skip_defaults=exclude_unset\n+                )  # pragma: nocover\n         if is_coroutine:\n             value, errors_ = field.validate(response_content, {}, loc=(\"response\",))\n         else:\n",
+ "clean_diff": "diff --git a/fastapi/routing.py b/fastapi/routing.py\nindex b36104869..b90935e15 100644\n--- a/fastapi/routing.py\n+++ b/fastapi/routing.py\n@@ -48,6 +48,28 @@ except ImportError:  # pragma: nocover\n     from pydantic.fields import Field as ModelField  # type: ignore\n \n \n+def _prepare_response_content(\n+    res: Any, *, by_alias: bool = True, exclude_unset: bool\n+) -> Any:\n+    if isinstance(res, BaseModel):\n+        if PYDANTIC_1:\n+            return res.dict(by_alias=by_alias, exclude_unset=exclude_unset)\n+        else:\n+            return res.dict(\n+                by_alias=by_alias, skip_defaults=exclude_unset\n+            )  # pragma: nocover\n+    elif isinstance(res, list):\n+        return [\n+            _prepare_response_content(item, exclude_unset=exclude_unset) for item in res\n+        ]\n+    elif isinstance(res, dict):\n+        return {\n+            k: _prepare_response_content(v, exclude_unset=exclude_unset)\n+            for k, v in res.items()\n+        }\n+    return res\n+\n+\n async def serialize_response(\n     *,\n     field: ModelField = None,\n@@ -60,13 +82,9 @@ async def serialize_response(\n ) -> Any:\n     if field:\n         errors = []\n-        if exclude_unset and isinstance(response_content, BaseModel):\n-            if PYDANTIC_1:\n-                response_content = response_content.dict(exclude_unset=exclude_unset)\n-            else:\n-                response_content = response_content.dict(\n-                    skip_defaults=exclude_unset\n-                )  # pragma: nocover\n+        response_content = _prepare_response_content(\n+            response_content, by_alias=by_alias, exclude_unset=exclude_unset\n+        )\n         if is_coroutine:\n             value, errors_ = field.validate(response_content, {}, loc=(\"response\",))\n         else:\n",
+ "fix_patch": "diff --git a/fastapi/routing.py b/fastapi/routing.py\nindex b36104869..b90935e15 100644\n--- a/fastapi/routing.py\n+++ b/fastapi/routing.py\n@@ -48,6 +48,28 @@ except ImportError:  # pragma: nocover\n     from pydantic.fields import Field as ModelField  # type: ignore\n \n \n+def _prepare_response_content(\n+    res: Any, *, by_alias: bool = True, exclude_unset: bool\n+) -> Any:\n+    if isinstance(res, BaseModel):\n+        if PYDANTIC_1:\n+            return res.dict(by_alias=by_alias, exclude_unset=exclude_unset)\n+        else:\n+            return res.dict(\n+                by_alias=by_alias, skip_defaults=exclude_unset\n+            )  # pragma: nocover\n+    elif isinstance(res, list):\n+        return [\n+            _prepare_response_content(item, exclude_unset=exclude_unset) for item in res\n+        ]\n+    elif isinstance(res, dict):\n+        return {\n+            k: _prepare_response_content(v, exclude_unset=exclude_unset)\n+            for k, v in res.items()\n+        }\n+    return res\n+\n+\n async def serialize_response(\n     *,\n     field: ModelField = None,\n@@ -60,13 +82,9 @@ async def serialize_response(\n ) -> Any:\n     if field:\n         errors = []\n-        if exclude_unset and isinstance(response_content, BaseModel):\n-            if PYDANTIC_1:\n-                response_content = response_content.dict(exclude_unset=exclude_unset)\n-            else:\n-                response_content = response_content.dict(\n-                    skip_defaults=exclude_unset\n-                )  # pragma: nocover\n+        response_content = _prepare_response_content(\n+            response_content, by_alias=by_alias, exclude_unset=exclude_unset\n+        )\n         if is_coroutine:\n             value, errors_ = field.validate(response_content, {}, loc=(\"response\",))\n         else:\n",
+ "spans": [
+  [
+   50,
+   51
+  ],
+  [
+   63,
+   69
+  ]
+ ],
+ "enclosing": [
+  [
+   51,
+   90
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

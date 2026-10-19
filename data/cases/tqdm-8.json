@@ -1,0 +1,26 @@
+{
+ "case_id": "tqdm-8",
+ "project": "tqdm",
+ "bug_id": 8,
+ "split": "test",
+ "file": "tqdm/_tqdm.py",
+ "buggy_commit": "08b8ad1ff3bd003ef8309faaa0cc108ffa40317d",
+ "fixed_commit": "cae9d139c6df5614be3bf6e25ccbd600ee3286dc",
+ "buggy_diff": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex cb28ec5..469947a 100644\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -222,7 +222,7 @@ class tqdm(object):\n                     # Format left/right sides of the bar, and format the bar\n                     # later in the remaining space (avoid breaking display)\n                     l_bar_user, r_bar_user = bar_format.split('{bar}')\n-                    l_bar, r_bar = l_bar_user.format(**bar_args), r_bar_user.format(**bar_args)\n+                    l_bar, r_bar = l_bar.format(**bar_args), r_bar.format(**bar_args)\n                 else:\n                     # Else no progress bar, we can just format and return\n                     return bar_format.format(**bar_args)\n",
+ "clean_diff": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex 469947a..cb28ec5 100644\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -222,7 +222,7 @@ class tqdm(object):\n                     # Format left/right sides of the bar, and format the bar\n                     # later in the remaining space (avoid breaking display)\n                     l_bar_user, r_bar_user = bar_format.split('{bar}')\n-                    l_bar, r_bar = l_bar.format(**bar_args), r_bar.format(**bar_args)\n+                    l_bar, r_bar = l_bar_user.format(**bar_args), r_bar_user.format(**bar_args)\n                 else:\n                     # Else no progress bar, we can just format and return\n                     return bar_format.format(**bar_args)\n",
+ "fix_patch": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex 469947a..cb28ec5 100644\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -222,7 +222,7 @@ class tqdm(object):\n                     # Format left/right sides of the bar, and format the bar\n                     # later in the remaining space (avoid breaking display)\n                     l_bar_user, r_bar_user = bar_format.split('{bar}')\n-                    l_bar, r_bar = l_bar.format(**bar_args), r_bar.format(**bar_args)\n+                    l_bar, r_bar = l_bar_user.format(**bar_args), r_bar_user.format(**bar_args)\n                 else:\n                     # Else no progress bar, we can just format and return\n                     return bar_format.format(**bar_args)\n",
+ "spans": [
+  [
+   225,
+   225
+  ]
+ ],
+ "enclosing": [
+  [
+   103,
+   265
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

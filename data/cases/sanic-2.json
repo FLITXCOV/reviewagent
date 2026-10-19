@@ -1,0 +1,26 @@
+{
+ "case_id": "sanic-2",
+ "project": "sanic",
+ "bug_id": 2,
+ "split": "test",
+ "file": "sanic/server.py",
+ "buggy_commit": "ba9b432993019b0af0c4827a5ed42aaa091bd17d",
+ "fixed_commit": "801595e24acdf8050b8d3ffa512d424147848d32",
+ "buggy_diff": "diff --git a/sanic/server.py b/sanic/server.py\nindex b9e72197..47ebcd95 100644\n--- a/sanic/server.py\n+++ b/sanic/server.py\n@@ -735,26 +735,6 @@ class AsyncioServer:\n             task = asyncio.ensure_future(coro, loop=self.loop)\n             return task\n \n-    def start_serving(self):\n-        if self.server:\n-            try:\n-                return self.server.start_serving()\n-            except AttributeError:\n-                raise NotImplementedError(\n-                    \"server.start_serving not available in this version \"\n-                    \"of asyncio or uvloop.\"\n-                )\n-\n-    def serve_forever(self):\n-        if self.server:\n-            try:\n-                return self.server.serve_forever()\n-            except AttributeError:\n-                raise NotImplementedError(\n-                    \"server.serve_forever not available in this version \"\n-                    \"of asyncio or uvloop.\"\n-                )\n-\n     def __await__(self):\n         \"\"\"Starts the asyncio server, returns AsyncServerCoro\"\"\"\n         task = asyncio.ensure_future(self.serve_coro)\n",
+ "clean_diff": "diff --git a/sanic/server.py b/sanic/server.py\nindex 47ebcd95..b9e72197 100644\n--- a/sanic/server.py\n+++ b/sanic/server.py\n@@ -735,6 +735,26 @@ class AsyncioServer:\n             task = asyncio.ensure_future(coro, loop=self.loop)\n             return task\n \n+    def start_serving(self):\n+        if self.server:\n+            try:\n+                return self.server.start_serving()\n+            except AttributeError:\n+                raise NotImplementedError(\n+                    \"server.start_serving not available in this version \"\n+                    \"of asyncio or uvloop.\"\n+                )\n+\n+    def serve_forever(self):\n+        if self.server:\n+            try:\n+                return self.server.serve_forever()\n+            except AttributeError:\n+                raise NotImplementedError(\n+                    \"server.serve_forever not available in this version \"\n+                    \"of asyncio or uvloop.\"\n+                )\n+\n     def __await__(self):\n         \"\"\"Starts the asyncio server, returns AsyncServerCoro\"\"\"\n         task = asyncio.ensure_future(self.serve_coro)\n",
+ "fix_patch": "diff --git a/sanic/server.py b/sanic/server.py\nindex 47ebcd95..b9e72197 100644\n--- a/sanic/server.py\n+++ b/sanic/server.py\n@@ -735,6 +735,26 @@ class AsyncioServer:\n             task = asyncio.ensure_future(coro, loop=self.loop)\n             return task\n \n+    def start_serving(self):\n+        if self.server:\n+            try:\n+                return self.server.start_serving()\n+            except AttributeError:\n+                raise NotImplementedError(\n+                    \"server.start_serving not available in this version \"\n+                    \"of asyncio or uvloop.\"\n+                )\n+\n+    def serve_forever(self):\n+        if self.server:\n+            try:\n+                return self.server.serve_forever()\n+            except AttributeError:\n+                raise NotImplementedError(\n+                    \"server.serve_forever not available in this version \"\n+                    \"of asyncio or uvloop.\"\n+                )\n+\n     def __await__(self):\n         \"\"\"Starts the asyncio server, returns AsyncServerCoro\"\"\"\n         task = asyncio.ensure_future(self.serve_coro)\n",
+ "spans": [
+  [
+   737,
+   738
+  ]
+ ],
+ "enclosing": [
+  [
+   675,
+   744
+  ]
+ ],
+ "stratum": "deletion_only",
+ "fix_matches_dataset_patch": true
+}

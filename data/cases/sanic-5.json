@@ -1,0 +1,21 @@
+{
+ "case_id": "sanic-5",
+ "project": "sanic",
+ "bug_id": 5,
+ "split": "test",
+ "file": "sanic/log.py",
+ "buggy_commit": "e3a27c2cc485d57aa1ff87d9f69098e4ab12727e",
+ "fixed_commit": "b63c06c75a54752d7f3115d3c635580db44b8399",
+ "buggy_diff": "diff --git a/sanic/log.py b/sanic/log.py\nindex 08fc835d..cb8ca524 100644\n--- a/sanic/log.py\n+++ b/sanic/log.py\n@@ -6,7 +6,7 @@ LOGGING_CONFIG_DEFAULTS = dict(\n     version=1,\n     disable_existing_loggers=False,\n     loggers={\n-        \"sanic.root\": {\"level\": \"INFO\", \"handlers\": [\"console\"]},\n+        \"root\": {\"level\": \"INFO\", \"handlers\": [\"console\"]},\n         \"sanic.error\": {\n             \"level\": \"INFO\",\n             \"handlers\": [\"error_console\"],\n",
+ "clean_diff": "diff --git a/sanic/log.py b/sanic/log.py\nindex cb8ca524..08fc835d 100644\n--- a/sanic/log.py\n+++ b/sanic/log.py\n@@ -6,7 +6,7 @@ LOGGING_CONFIG_DEFAULTS = dict(\n     version=1,\n     disable_existing_loggers=False,\n     loggers={\n-        \"root\": {\"level\": \"INFO\", \"handlers\": [\"console\"]},\n+        \"sanic.root\": {\"level\": \"INFO\", \"handlers\": [\"console\"]},\n         \"sanic.error\": {\n             \"level\": \"INFO\",\n             \"handlers\": [\"error_console\"],\n",
+ "fix_patch": "diff --git a/sanic/log.py b/sanic/log.py\nindex cb8ca524..08fc835d 100644\n--- a/sanic/log.py\n+++ b/sanic/log.py\n@@ -6,7 +6,7 @@ LOGGING_CONFIG_DEFAULTS = dict(\n     version=1,\n     disable_existing_loggers=False,\n     loggers={\n-        \"root\": {\"level\": \"INFO\", \"handlers\": [\"console\"]},\n+        \"sanic.root\": {\"level\": \"INFO\", \"handlers\": [\"console\"]},\n         \"sanic.error\": {\n             \"level\": \"INFO\",\n             \"handlers\": [\"error_console\"],\n",
+ "spans": [
+  [
+   9,
+   9
+  ]
+ ],
+ "enclosing": [],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

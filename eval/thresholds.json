@@ -1,0 +1,1 @@
+{"recall_lenient_min": 0.30, "fp_rate_clean_max": 0.20, "failed_nodes_max": 5}

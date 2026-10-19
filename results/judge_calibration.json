@@ -1,0 +1,169 @@
+{
+  "n_pairs": 20,
+  "agreement": "15/20",
+  "agreement_pct": 75.0,
+  "cohens_kappa": 0.5,
+  "judge_errors": 4,
+  "pairs": [
+    {
+      "case_id": "black-1",
+      "type": "buggy",
+      "finding": "The changes remove robust error handling for `ProcessPoolExecutor` instantiation",
+      "human": true,
+      "judge": false,
+      "reasoning": "The finding incorrectly describes the buggy code as having removed error handlin"
+    },
+    {
+      "case_id": "black-10",
+      "type": "buggy",
+      "finding": "The change introduces new logic for calculating `current_column` when a tab char",
+      "human": true,
+      "judge": false,
+      "reasoning": "The finding discusses adding test cases for a new tab increment logic, whereas t"
+    },
+    {
+      "case_id": "fastapi-8",
+      "type": "buggy",
+      "finding": "The change removes the `route_class_override` parameter from `add_api_route` and",
+      "human": true,
+      "judge": false,
+      "reasoning": "The finding claims that the `route_class_override` parameter was removed, wherea"
+    },
+    {
+      "case_id": "fastapi-8",
+      "type": "buggy",
+      "finding": "The removal of `route_class_override=type(route)` when re-adding routes (e.g., d",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding correctly identifies that the code was missing the preservation of t"
+    },
+    {
+      "case_id": "httpie-1",
+      "type": "buggy",
+      "finding": "The change removes the filename trimming logic, which previously ensured that ge",
+      "human": true,
+      "judge": false,
+      "reasoning": "The finding claims that the change *removes* the filename trimming logic, wherea"
+    },
+    {
+      "case_id": "luigi-18",
+      "type": "buggy",
+      "finding": "The change removes the condition `new_status != DISABLED`. This means that if a ",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding correctly identifies that the absence of the `new_status != DISABLED"
+    },
+    {
+      "case_id": "sanic-1",
+      "type": "buggy",
+      "finding": "The change from `appendleft` to `append` reverses the execution order of respons",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding correctly identifies that the code should use `appendleft` instead o"
+    },
+    {
+      "case_id": "sanic-1",
+      "type": "buggy",
+      "finding": "This significant change in middleware execution order introduces a new behavior ",
+      "human": true,
+      "judge": false,
+      "reasoning": "The finding is a test recommendation regarding middleware execution order rather"
+    },
+    {
+      "case_id": "scrapy-23",
+      "type": "buggy",
+      "finding": "The `base64.b64encode` function expects a bytes-like object as input. After this",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding correctly identifies that `user_pass` needs to be bytes for `base64."
+    },
+    {
+      "case_id": "scrapy-23",
+      "type": "buggy",
+      "finding": "The `creds` variable, which is the result of `base64.b64encode`, is a bytes obje",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding correctly identifies that concatenating a string literal with bytes "
+    },
+    {
+      "case_id": "black-1",
+      "type": "clean",
+      "finding": "The `try...except OSError` block at lines 621-623 is too narrow to catch all rel",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding discusses catching RuntimeError in addition to OSError for executor "
+    },
+    {
+      "case_id": "black-1",
+      "type": "clean",
+      "finding": "The new error handling branch introduced by `except OSError` (lines 623-627) is ",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding is a test coverage complaint about the newly introduced exception ha"
+    },
+    {
+      "case_id": "black-10",
+      "type": "clean",
+      "finding": "The change incorrectly calculates the `current_column` for tab characters. Previ",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding incorrectly claims that the patch changes tab handling from 4 to 1, "
+    },
+    {
+      "case_id": "fastapi-8",
+      "type": "clean",
+      "finding": "The change introduces a new feature allowing the override of the `APIRoute` clas",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding is a request for tests to cover the new functionality, whereas the r"
+    },
+    {
+      "case_id": "httpie-1",
+      "type": "clean",
+      "finding": "The newly introduced functions (`trim_filename`, `get_filename_max_length`, `tri",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding is suggesting adding test coverage for the newly introduced function"
+    },
+    {
+      "case_id": "sanic-1",
+      "type": "clean",
+      "finding": "The change from `append` to `appendleft` on line 656 reverses the order in which",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding is describing the exact change made by the patch as a potential bug "
+    },
+    {
+      "case_id": "scrapy-7",
+      "type": "clean",
+      "finding": "The change introduces explicit handling for form elements where the 'action' att",
+      "human": false,
+      "judge": false,
+      "reasoning": "judge_error: daily quota exhausted: {\n  \"error\": {\n    \"code\": 429,\n    \"message"
+    },
+    {
+      "case_id": "black-12",
+      "type": "synthetic_eval",
+      "finding": "Defect in black.py around line 880",
+      "human": false,
+      "judge": false,
+      "reasoning": "judge_error: daily quota exhausted: {\n  \"error\": {\n    \"code\": 429,\n    \"message"
+    },
+    {
+      "case_id": "black-13",
+      "type": "synthetic_eval",
+      "finding": "Defect in blib2to3/pgen2/tokenize.py around line 519",
+      "human": false,
+      "judge": false,
+      "reasoning": "judge_error: daily quota exhausted: {\n  \"error\": {\n    \"code\": 429,\n    \"message"
+    },
+    {
+      "case_id": "black-2",
+      "type": "synthetic_eval",
+      "finding": "Defect in black.py around line 3119",
+      "human": false,
+      "judge": false,
+      "reasoning": "judge_error: daily quota exhausted: {\n  \"error\": {\n    \"code\": 429,\n    \"message"
+    }
+  ]
+}

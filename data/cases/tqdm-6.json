@@ -1,0 +1,26 @@
+{
+ "case_id": "tqdm-6",
+ "project": "tqdm",
+ "bug_id": 6,
+ "split": "test",
+ "file": "tqdm/_tqdm.py",
+ "buggy_commit": "a4b9c86db548b2d0dbb5af7a6bbdc26ab47e1eec",
+ "fixed_commit": "6dad2e89019317e875c46d5a3a82a811ad6de2f9",
+ "buggy_diff": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex ab42ed8..04b2961 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -853,7 +853,7 @@ class tqdm(object):\n         return self.total if self.iterable is None else \\\n             (self.iterable.shape[0] if hasattr(self.iterable, \"shape\")\n              else len(self.iterable) if hasattr(self.iterable, \"__len__\")\n-             else getattr(self, \"total\", None))\n+             else self.total)\n \n     def __enter__(self):\n         return self\n",
+ "clean_diff": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex 04b2961..ab42ed8 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -853,7 +853,7 @@ class tqdm(object):\n         return self.total if self.iterable is None else \\\n             (self.iterable.shape[0] if hasattr(self.iterable, \"shape\")\n              else len(self.iterable) if hasattr(self.iterable, \"__len__\")\n-             else self.total)\n+             else getattr(self, \"total\", None))\n \n     def __enter__(self):\n         return self\n",
+ "fix_patch": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex 04b2961..ab42ed8 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -853,7 +853,7 @@ class tqdm(object):\n         return self.total if self.iterable is None else \\\n             (self.iterable.shape[0] if hasattr(self.iterable, \"shape\")\n              else len(self.iterable) if hasattr(self.iterable, \"__len__\")\n-             else self.total)\n+             else getattr(self, \"total\", None))\n \n     def __enter__(self):\n         return self\n",
+ "spans": [
+  [
+   856,
+   856
+  ]
+ ],
+ "enclosing": [
+  [
+   852,
+   856
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

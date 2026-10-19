@@ -1,0 +1,26 @@
+{
+ "case_id": "black-3",
+ "project": "black",
+ "bug_id": 3,
+ "split": "test",
+ "file": "black.py",
+ "buggy_commit": "8126b4f6a9342290de4655e6a8a78cd288ce7daa",
+ "fixed_commit": "7a14a37981862ef418f3cdb4a7e2375856f97529",
+ "buggy_diff": "diff --git a/black.py b/black.py\nindex 26a2915b..d9348a37 100644\n--- a/black.py\n+++ b/black.py\n@@ -394,7 +394,7 @@ def target_version_option_callback(\n @click.option(\n     \"--config\",\n     type=click.Path(\n-        exists=True, file_okay=True, dir_okay=False, readable=True, allow_dash=False\n+        exists=False, file_okay=True, dir_okay=False, readable=True, allow_dash=False\n     ),\n     is_eager=True,\n     callback=read_pyproject_toml,\n",
+ "clean_diff": "diff --git a/black.py b/black.py\nindex d9348a37..26a2915b 100644\n--- a/black.py\n+++ b/black.py\n@@ -394,7 +394,7 @@ def target_version_option_callback(\n @click.option(\n     \"--config\",\n     type=click.Path(\n-        exists=False, file_okay=True, dir_okay=False, readable=True, allow_dash=False\n+        exists=True, file_okay=True, dir_okay=False, readable=True, allow_dash=False\n     ),\n     is_eager=True,\n     callback=read_pyproject_toml,\n",
+ "fix_patch": "diff --git a/black.py b/black.py\nindex d9348a37..26a2915b 100644\n--- a/black.py\n+++ b/black.py\n@@ -394,7 +394,7 @@ def target_version_option_callback(\n @click.option(\n     \"--config\",\n     type=click.Path(\n-        exists=False, file_okay=True, dir_okay=False, readable=True, allow_dash=False\n+        exists=True, file_okay=True, dir_okay=False, readable=True, allow_dash=False\n     ),\n     is_eager=True,\n     callback=read_pyproject_toml,\n",
+ "spans": [
+  [
+   397,
+   397
+  ]
+ ],
+ "enclosing": [
+  [
+   278,
+   498
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

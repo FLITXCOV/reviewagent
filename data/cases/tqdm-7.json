@@ -1,0 +1,21 @@
+{
+ "case_id": "tqdm-7",
+ "project": "tqdm",
+ "bug_id": 7,
+ "split": "test",
+ "file": "tqdm/_main.py",
+ "buggy_commit": "caefe02fd6f3165e5634460ab20caf4c60400120",
+ "fixed_commit": "4efd35246c924236f34d8130b1055a3c3ba78605",
+ "buggy_diff": "diff --git a/tqdm/_main.py b/tqdm/_main.py\nindex b2fd1d3..9c9273f 100644\n--- a/tqdm/_main.py\n+++ b/tqdm/_main.py\n@@ -89,7 +89,7 @@ def posix_pipe(fin, fout, delim='\\n', buf_size=256,\n # ((opt, type), ... )\n RE_OPTS = re.compile(r'\\n {8}(\\S+)\\s{2,}:\\s*([^,]+)')\n # better split method assuming no positional args\n-RE_SHLEX = re.compile(r'\\s*(?<!\\S)--?([^\\s=]+)(?:\\s*|=|$)')\n+RE_SHLEX = re.compile(r'\\s*--?([^\\s=]+)(?:\\s*|=|$)')\n \n # TODO: add custom support for some of the following?\n UNSUPPORTED_OPTS = ('iterable', 'gui', 'out', 'file')\n",
+ "clean_diff": "diff --git a/tqdm/_main.py b/tqdm/_main.py\nindex 9c9273f..b2fd1d3 100644\n--- a/tqdm/_main.py\n+++ b/tqdm/_main.py\n@@ -89,7 +89,7 @@ def posix_pipe(fin, fout, delim='\\n', buf_size=256,\n # ((opt, type), ... )\n RE_OPTS = re.compile(r'\\n {8}(\\S+)\\s{2,}:\\s*([^,]+)')\n # better split method assuming no positional args\n-RE_SHLEX = re.compile(r'\\s*--?([^\\s=]+)(?:\\s*|=|$)')\n+RE_SHLEX = re.compile(r'\\s*(?<!\\S)--?([^\\s=]+)(?:\\s*|=|$)')\n \n # TODO: add custom support for some of the following?\n UNSUPPORTED_OPTS = ('iterable', 'gui', 'out', 'file')\n",
+ "fix_patch": "diff --git a/tqdm/_main.py b/tqdm/_main.py\nindex 9c9273f..b2fd1d3 100644\n--- a/tqdm/_main.py\n+++ b/tqdm/_main.py\n@@ -89,7 +89,7 @@ def posix_pipe(fin, fout, delim='\\n', buf_size=256,\n # ((opt, type), ... )\n RE_OPTS = re.compile(r'\\n {8}(\\S+)\\s{2,}:\\s*([^,]+)')\n # better split method assuming no positional args\n-RE_SHLEX = re.compile(r'\\s*--?([^\\s=]+)(?:\\s*|=|$)')\n+RE_SHLEX = re.compile(r'\\s*(?<!\\S)--?([^\\s=]+)(?:\\s*|=|$)')\n \n # TODO: add custom support for some of the following?\n UNSUPPORTED_OPTS = ('iterable', 'gui', 'out', 'file')\n",
+ "spans": [
+  [
+   92,
+   92
+  ]
+ ],
+ "enclosing": [],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

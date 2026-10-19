@@ -1,0 +1,26 @@
+{
+ "case_id": "thefuck-22",
+ "project": "thefuck",
+ "bug_id": 22,
+ "split": "dev",
+ "file": "thefuck/types.py",
+ "buggy_commit": "faa7ee603057fa98c25507d30180c055d10d13d4",
+ "fixed_commit": "e2e8b6fc865452b4cfc1bed70e5b9b49807258ae",
+ "buggy_diff": "diff --git a/thefuck/types.py b/thefuck/types.py\nindex cf09137..69b174e 100644\n--- a/thefuck/types.py\n+++ b/thefuck/types.py\n@@ -81,10 +81,9 @@ class SortedCorrectedCommandsSequence(object):\n \n     def _realise(self):\n         \"\"\"Realises generator, removes duplicates and sorts commands.\"\"\"\n-        if self._cached:\n-            commands = self._remove_duplicates(self._commands)\n-            self._cached = [self._cached[0]] + sorted(\n-                commands, key=lambda corrected_command: corrected_command.priority)\n+        commands = self._remove_duplicates(self._commands)\n+        self._cached = [self._cached[0]] + sorted(\n+            commands, key=lambda corrected_command: corrected_command.priority)\n         self._realised = True\n         debug('SortedCommandsSequence was realised with: {}, after: {}'.format(\n             self._cached, '\\n'.join(format_stack())), self._settings)\n",
+ "clean_diff": "diff --git a/thefuck/types.py b/thefuck/types.py\nindex 69b174e..cf09137 100644\n--- a/thefuck/types.py\n+++ b/thefuck/types.py\n@@ -81,9 +81,10 @@ class SortedCorrectedCommandsSequence(object):\n \n     def _realise(self):\n         \"\"\"Realises generator, removes duplicates and sorts commands.\"\"\"\n-        commands = self._remove_duplicates(self._commands)\n-        self._cached = [self._cached[0]] + sorted(\n-            commands, key=lambda corrected_command: corrected_command.priority)\n+        if self._cached:\n+            commands = self._remove_duplicates(self._commands)\n+            self._cached = [self._cached[0]] + sorted(\n+                commands, key=lambda corrected_command: corrected_command.priority)\n         self._realised = True\n         debug('SortedCommandsSequence was realised with: {}, after: {}'.format(\n             self._cached, '\\n'.join(format_stack())), self._settings)\n",
+ "fix_patch": "diff --git a/thefuck/types.py b/thefuck/types.py\nindex 69b174e..cf09137 100644\n--- a/thefuck/types.py\n+++ b/thefuck/types.py\n@@ -81,9 +81,10 @@ class SortedCorrectedCommandsSequence(object):\n \n     def _realise(self):\n         \"\"\"Realises generator, removes duplicates and sorts commands.\"\"\"\n-        commands = self._remove_duplicates(self._commands)\n-        self._cached = [self._cached[0]] + sorted(\n-            commands, key=lambda corrected_command: corrected_command.priority)\n+        if self._cached:\n+            commands = self._remove_duplicates(self._commands)\n+            self._cached = [self._cached[0]] + sorted(\n+                commands, key=lambda corrected_command: corrected_command.priority)\n         self._realised = True\n         debug('SortedCommandsSequence was realised with: {}, after: {}'.format(\n             self._cached, '\\n'.join(format_stack())), self._settings)\n",
+ "spans": [
+  [
+   84,
+   86
+  ]
+ ],
+ "enclosing": [
+  [
+   82,
+   89
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

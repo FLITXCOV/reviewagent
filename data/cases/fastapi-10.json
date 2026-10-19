@@ -1,0 +1,26 @@
+{
+ "case_id": "fastapi-10",
+ "project": "fastapi",
+ "bug_id": 10,
+ "split": "test",
+ "file": "fastapi/routing.py",
+ "buggy_commit": "b77a43bcac3ec8e7edbe82543e777c60ae85c178",
+ "fixed_commit": "38495fffa560fa57a8f0e6437d8e43c36c8e5612",
+ "buggy_diff": "diff --git a/fastapi/routing.py b/fastapi/routing.py\nindex 930cbe001..3c6774ceb 100644\n--- a/fastapi/routing.py\n+++ b/fastapi/routing.py\n@@ -52,8 +52,6 @@ def serialize_response(\n             errors.extend(errors_)\n         if errors:\n             raise ValidationError(errors)\n-        if skip_defaults and isinstance(response, BaseModel):\n-            value = response.dict(skip_defaults=skip_defaults)\n         return jsonable_encoder(\n             value,\n             include=include,\n",
+ "clean_diff": "diff --git a/fastapi/routing.py b/fastapi/routing.py\nindex 3c6774ceb..930cbe001 100644\n--- a/fastapi/routing.py\n+++ b/fastapi/routing.py\n@@ -52,6 +52,8 @@ def serialize_response(\n             errors.extend(errors_)\n         if errors:\n             raise ValidationError(errors)\n+        if skip_defaults and isinstance(response, BaseModel):\n+            value = response.dict(skip_defaults=skip_defaults)\n         return jsonable_encoder(\n             value,\n             include=include,\n",
+ "fix_patch": "diff --git a/fastapi/routing.py b/fastapi/routing.py\nindex 3c6774ceb..930cbe001 100644\n--- a/fastapi/routing.py\n+++ b/fastapi/routing.py\n@@ -52,6 +52,8 @@ def serialize_response(\n             errors.extend(errors_)\n         if errors:\n             raise ValidationError(errors)\n+        if skip_defaults and isinstance(response, BaseModel):\n+            value = response.dict(skip_defaults=skip_defaults)\n         return jsonable_encoder(\n             value,\n             include=include,\n",
+ "spans": [
+  [
+   54,
+   55
+  ]
+ ],
+ "enclosing": [
+  [
+   37,
+   63
+  ]
+ ],
+ "stratum": "deletion_only",
+ "fix_matches_dataset_patch": true
+}

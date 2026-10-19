@@ -1,0 +1,38 @@
+{
+ "case_id": "black-1",
+ "project": "black",
+ "bug_id": 1,
+ "split": "dev",
+ "file": "black.py",
+ "buggy_commit": "26c9465a22c732ab1e17b0dec578fa3432e9b558",
+ "fixed_commit": "c0a7582e3d4cc8bec3b7f5a6c52b36880dcb57d7",
+ "buggy_diff": "diff --git a/black.py b/black.py\nindex fc1597a4..2a913fc5 100644\n--- a/black.py\n+++ b/black.py\n@@ -618,14 +618,7 @@ def reformat_many(\n     if sys.platform == \"win32\":\n         # Work around https://bugs.python.org/issue26903\n         worker_count = min(worker_count, 61)\n-    try:\n-        executor = ProcessPoolExecutor(max_workers=worker_count)\n-    except OSError:\n-        # we arrive here if the underlying system does not support multi-processing\n-        # like in AWS Lambda, in which case we gracefully fallback to the default\n-        # mono-process Executor by using None\n-        executor = None\n-\n+    executor = ProcessPoolExecutor(max_workers=worker_count)\n     try:\n         loop.run_until_complete(\n             schedule_formatting(\n@@ -640,8 +633,7 @@ def reformat_many(\n         )\n     finally:\n         shutdown(loop)\n-        if executor is not None:\n-            executor.shutdown()\n+        executor.shutdown()\n \n \n async def schedule_formatting(\n@@ -651,7 +643,7 @@ async def schedule_formatting(\n     mode: Mode,\n     report: \"Report\",\n     loop: asyncio.AbstractEventLoop,\n-    executor: Optional[Executor],\n+    executor: Executor,\n ) -> None:\n     \"\"\"Run formatting of `sources` in parallel using the provided `executor`.\n \n",
+ "clean_diff": "diff --git a/black.py b/black.py\nindex 2a913fc5..fc1597a4 100644\n--- a/black.py\n+++ b/black.py\n@@ -618,7 +618,14 @@ def reformat_many(\n     if sys.platform == \"win32\":\n         # Work around https://bugs.python.org/issue26903\n         worker_count = min(worker_count, 61)\n-    executor = ProcessPoolExecutor(max_workers=worker_count)\n+    try:\n+        executor = ProcessPoolExecutor(max_workers=worker_count)\n+    except OSError:\n+        # we arrive here if the underlying system does not support multi-processing\n+        # like in AWS Lambda, in which case we gracefully fallback to the default\n+        # mono-process Executor by using None\n+        executor = None\n+\n     try:\n         loop.run_until_complete(\n             schedule_formatting(\n@@ -633,7 +640,8 @@ def reformat_many(\n         )\n     finally:\n         shutdown(loop)\n-        executor.shutdown()\n+        if executor is not None:\n+            executor.shutdown()\n \n \n async def schedule_formatting(\n@@ -643,7 +651,7 @@ async def schedule_formatting(\n     mode: Mode,\n     report: \"Report\",\n     loop: asyncio.AbstractEventLoop,\n-    executor: Executor,\n+    executor: Optional[Executor],\n ) -> None:\n     \"\"\"Run formatting of `sources` in parallel using the provided `executor`.\n \n",
+ "fix_patch": "diff --git a/black.py b/black.py\nindex 2a913fc5..fc1597a4 100644\n--- a/black.py\n+++ b/black.py\n@@ -618,7 +618,14 @@ def reformat_many(\n     if sys.platform == \"win32\":\n         # Work around https://bugs.python.org/issue26903\n         worker_count = min(worker_count, 61)\n-    executor = ProcessPoolExecutor(max_workers=worker_count)\n+    try:\n+        executor = ProcessPoolExecutor(max_workers=worker_count)\n+    except OSError:\n+        # we arrive here if the underlying system does not support multi-processing\n+        # like in AWS Lambda, in which case we gracefully fallback to the default\n+        # mono-process Executor by using None\n+        executor = None\n+\n     try:\n         loop.run_until_complete(\n             schedule_formatting(\n@@ -633,7 +640,8 @@ def reformat_many(\n         )\n     finally:\n         shutdown(loop)\n-        executor.shutdown()\n+        if executor is not None:\n+            executor.shutdown()\n \n \n async def schedule_formatting(\n@@ -643,7 +651,7 @@ async def schedule_formatting(\n     mode: Mode,\n     report: \"Report\",\n     loop: asyncio.AbstractEventLoop,\n-    executor: Executor,\n+    executor: Optional[Executor],\n ) -> None:\n     \"\"\"Run formatting of `sources` in parallel using the provided `executor`.\n \n",
+ "spans": [
+  [
+   621,
+   621
+  ],
+  [
+   636,
+   636
+  ],
+  [
+   646,
+   646
+  ]
+ ],
+ "enclosing": [
+  [
+   612,
+   636
+  ],
+  [
+   639,
+   707
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

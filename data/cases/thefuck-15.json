@@ -1,0 +1,34 @@
+{
+ "case_id": "thefuck-15",
+ "project": "thefuck",
+ "bug_id": 15,
+ "split": "test",
+ "file": "thefuck/rules/git_add.py",
+ "buggy_commit": "3a39deb485995e67afb1919972cd1c9aaedf4c32",
+ "fixed_commit": "41707b80c61acadb7c87b0efcbf10f4186dc5937",
+ "buggy_diff": "diff --git a/thefuck/rules/git_add.py b/thefuck/rules/git_add.py\nindex a779a20..0cf1b05 100644\n--- a/thefuck/rules/git_add.py\n+++ b/thefuck/rules/git_add.py\n@@ -5,14 +5,15 @@ from thefuck.specific.git import git_support\n \n @git_support\n def match(command):\n-    return 'did not match any file(s) known to git.' in command.stderr\n+    return ('did not match any file(s) known to git.' in command.stderr\n+            and \"Did you forget to 'git add'?\" in command.stderr)\n \n \n @git_support\n def get_new_command(command):\n     missing_file = re.findall(\n-        r\"error: pathspec '([^']*)' \"\n-        r'did not match any file\\(s\\) known to git.', command.stderr)[0]\n+            r\"error: pathspec '([^']*)' \"\n+            r\"did not match any file\\(s\\) known to git.\", command.stderr)[0]\n \n     formatme = shell.and_('git add -- {}', '{}')\n     return formatme.format(missing_file, command.script)\n",
+ "clean_diff": "diff --git a/thefuck/rules/git_add.py b/thefuck/rules/git_add.py\nindex 0cf1b05..a779a20 100644\n--- a/thefuck/rules/git_add.py\n+++ b/thefuck/rules/git_add.py\n@@ -5,15 +5,14 @@ from thefuck.specific.git import git_support\n \n @git_support\n def match(command):\n-    return ('did not match any file(s) known to git.' in command.stderr\n-            and \"Did you forget to 'git add'?\" in command.stderr)\n+    return 'did not match any file(s) known to git.' in command.stderr\n \n \n @git_support\n def get_new_command(command):\n     missing_file = re.findall(\n-            r\"error: pathspec '([^']*)' \"\n-            r\"did not match any file\\(s\\) known to git.\", command.stderr)[0]\n+        r\"error: pathspec '([^']*)' \"\n+        r'did not match any file\\(s\\) known to git.', command.stderr)[0]\n \n     formatme = shell.and_('git add -- {}', '{}')\n     return formatme.format(missing_file, command.script)\n",
+ "fix_patch": "diff --git a/thefuck/rules/git_add.py b/thefuck/rules/git_add.py\nindex 0cf1b05..a779a20 100644\n--- a/thefuck/rules/git_add.py\n+++ b/thefuck/rules/git_add.py\n@@ -5,15 +5,14 @@ from thefuck.specific.git import git_support\n \n @git_support\n def match(command):\n-    return ('did not match any file(s) known to git.' in command.stderr\n-            and \"Did you forget to 'git add'?\" in command.stderr)\n+    return 'did not match any file(s) known to git.' in command.stderr\n \n \n @git_support\n def get_new_command(command):\n     missing_file = re.findall(\n-            r\"error: pathspec '([^']*)' \"\n-            r\"did not match any file\\(s\\) known to git.\", command.stderr)[0]\n+        r\"error: pathspec '([^']*)' \"\n+        r'did not match any file\\(s\\) known to git.', command.stderr)[0]\n \n     formatme = shell.and_('git add -- {}', '{}')\n     return formatme.format(missing_file, command.script)\n",
+ "spans": [
+  [
+   8,
+   9
+  ],
+  [
+   15,
+   16
+  ]
+ ],
+ "enclosing": [
+  [
+   6,
+   9
+  ],
+  [
+   12,
+   19
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

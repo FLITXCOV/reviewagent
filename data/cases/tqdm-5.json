@@ -1,0 +1,34 @@
+{
+ "case_id": "tqdm-5",
+ "project": "tqdm",
+ "bug_id": 5,
+ "split": "test",
+ "file": "tqdm/_tqdm.py",
+ "buggy_commit": "19b08ab34fdbfa0275bc5cb2430436c724c7e759",
+ "fixed_commit": "4f340697af69b71850aad496387c9c5aa1904136",
+ "buggy_diff": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex 2ab2854..f0261da 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -748,19 +748,12 @@ class tqdm(Comparable):\n         if disable is None and hasattr(file, \"isatty\") and not file.isatty():\n             disable = True\n \n-        if total is None and iterable is not None:\n-            try:\n-                total = len(iterable)\n-            except (TypeError, AttributeError):\n-                total = None\n-\n         if disable:\n             self.iterable = iterable\n             self.disable = disable\n             self.pos = self._get_free_pos(self)\n             self._instances.remove(self)\n             self.n = initial\n-            self.total = total\n             return\n \n         if kwargs:\n@@ -773,6 +766,12 @@ class tqdm(Comparable):\n                 else TqdmKeyError(\"Unknown argument(s): \" + str(kwargs)))\n \n         # Preprocess the arguments\n+        if total is None and iterable is not None:\n+            try:\n+                total = len(iterable)\n+            except (TypeError, AttributeError):\n+                total = None\n+\n         if ((ncols is None) and (file in (sys.stderr, sys.stdout))) or \\\n                 dynamic_ncols:  # pragma: no cover\n             if dynamic_ncols:\n",
+ "clean_diff": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex f0261da..2ab2854 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -748,12 +748,19 @@ class tqdm(Comparable):\n         if disable is None and hasattr(file, \"isatty\") and not file.isatty():\n             disable = True\n \n+        if total is None and iterable is not None:\n+            try:\n+                total = len(iterable)\n+            except (TypeError, AttributeError):\n+                total = None\n+\n         if disable:\n             self.iterable = iterable\n             self.disable = disable\n             self.pos = self._get_free_pos(self)\n             self._instances.remove(self)\n             self.n = initial\n+            self.total = total\n             return\n \n         if kwargs:\n@@ -766,12 +773,6 @@ class tqdm(Comparable):\n                 else TqdmKeyError(\"Unknown argument(s): \" + str(kwargs)))\n \n         # Preprocess the arguments\n-        if total is None and iterable is not None:\n-            try:\n-                total = len(iterable)\n-            except (TypeError, AttributeError):\n-                total = None\n-\n         if ((ncols is None) and (file in (sys.stderr, sys.stdout))) or \\\n                 dynamic_ncols:  # pragma: no cover\n             if dynamic_ncols:\n",
+ "fix_patch": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex f0261da..2ab2854 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -748,12 +748,19 @@ class tqdm(Comparable):\n         if disable is None and hasattr(file, \"isatty\") and not file.isatty():\n             disable = True\n \n+        if total is None and iterable is not None:\n+            try:\n+                total = len(iterable)\n+            except (TypeError, AttributeError):\n+                total = None\n+\n         if disable:\n             self.iterable = iterable\n             self.disable = disable\n             self.pos = self._get_free_pos(self)\n             self._instances.remove(self)\n             self.n = initial\n+            self.total = total\n             return\n \n         if kwargs:\n@@ -766,12 +773,6 @@ class tqdm(Comparable):\n                 else TqdmKeyError(\"Unknown argument(s): \" + str(kwargs)))\n \n         # Preprocess the arguments\n-        if total is None and iterable is not None:\n-            try:\n-                total = len(iterable)\n-            except (TypeError, AttributeError):\n-                total = None\n-\n         if ((ncols is None) and (file in (sys.stderr, sys.stdout))) or \\\n                 dynamic_ncols:  # pragma: no cover\n             if dynamic_ncols:\n",
+ "spans": [
+  [
+   750,
+   751
+  ],
+  [
+   756,
+   757
+  ],
+  [
+   769,
+   774
+  ]
+ ],
+ "enclosing": [
+  [
+   641,
+   866
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

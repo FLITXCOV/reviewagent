@@ -1,0 +1,32 @@
+# Virtual environments
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Data (large cloned repos — keep cases and manifest only)
+data/BugsInPy/
+data/repos/
+
+# Cache (commit the smoke-test subset; .gitignore the rest selectively if needed)
+# cache/
+
+# Results (commit these — they are the deliverable)
+# results/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# API keys
+.env

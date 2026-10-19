@@ -1,0 +1,26 @@
+{
+ "case_id": "tqdm-3",
+ "project": "tqdm",
+ "bug_id": 3,
+ "split": "test",
+ "file": "tqdm/_tqdm.py",
+ "buggy_commit": "c2599e3cd6087429f48bae34347ec5d2473c8392",
+ "fixed_commit": "73962a47026dd980ac0758820efc9c41cbf938e0",
+ "buggy_diff": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex 9e54c5f..318249b 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -947,17 +947,6 @@ class tqdm(Comparable):\n         # NB: Avoid race conditions by setting start_t at the very end of init\n         self.start_t = self.last_print_t\n \n-    def __bool__(self):\n-        if self.total is not None:\n-            return self.total > 0\n-        if self.iterable is None:\n-            raise TypeError('Boolean cast is undefined'\n-                            ' for tqdm objects that have no iterable or total')\n-        return bool(self.iterable)\n-\n-    def __nonzero__(self):\n-        return self.__bool__()\n-\n     def __len__(self):\n         return self.total if self.iterable is None else \\\n             (self.iterable.shape[0] if hasattr(self.iterable, \"shape\")\n",
+ "clean_diff": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex 318249b..9e54c5f 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -947,6 +947,17 @@ class tqdm(Comparable):\n         # NB: Avoid race conditions by setting start_t at the very end of init\n         self.start_t = self.last_print_t\n \n+    def __bool__(self):\n+        if self.total is not None:\n+            return self.total > 0\n+        if self.iterable is None:\n+            raise TypeError('Boolean cast is undefined'\n+                            ' for tqdm objects that have no iterable or total')\n+        return bool(self.iterable)\n+\n+    def __nonzero__(self):\n+        return self.__bool__()\n+\n     def __len__(self):\n         return self.total if self.iterable is None else \\\n             (self.iterable.shape[0] if hasattr(self.iterable, \"shape\")\n",
+ "fix_patch": "diff --git a/tqdm/_tqdm.py b/tqdm/_tqdm.py\nindex 318249b..9e54c5f 100755\n--- a/tqdm/_tqdm.py\n+++ b/tqdm/_tqdm.py\n@@ -947,6 +947,17 @@ class tqdm(Comparable):\n         # NB: Avoid race conditions by setting start_t at the very end of init\n         self.start_t = self.last_print_t\n \n+    def __bool__(self):\n+        if self.total is not None:\n+            return self.total > 0\n+        if self.iterable is None:\n+            raise TypeError('Boolean cast is undefined'\n+                            ' for tqdm objects that have no iterable or total')\n+        return bool(self.iterable)\n+\n+    def __nonzero__(self):\n+        return self.__bool__()\n+\n     def __len__(self):\n         return self.total if self.iterable is None else \\\n             (self.iterable.shape[0] if hasattr(self.iterable, \"shape\")\n",
+ "spans": [
+  [
+   949,
+   950
+  ]
+ ],
+ "enclosing": [
+  [
+   132,
+   1325
+  ]
+ ],
+ "stratum": "deletion_only",
+ "fix_matches_dataset_patch": true
+}

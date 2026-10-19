@@ -1,0 +1,30 @@
+{
+ "case_id": "black-9",
+ "project": "black",
+ "bug_id": 9,
+ "split": "test",
+ "file": "black.py",
+ "buggy_commit": "026c81b83454f176a9f9253cbfb70be2c159d822",
+ "fixed_commit": "d6db1c12a8e14833fe22da377cddc2bd1f43dc14",
+ "buggy_diff": "diff --git a/black.py b/black.py\nindex c44bc9b4..b7276663 100644\n--- a/black.py\n+++ b/black.py\n@@ -726,13 +726,13 @@ def get_grammars(target_versions: Set[TargetVersion]) -> List[Grammar]:\n     if not target_versions:\n         return GRAMMARS\n     elif all(not version.is_python2() for version in target_versions):\n-        # Python 3-compatible code, so don't try Python 2 grammar\n+        # Python 2-compatible code, so don't try Python 3 grammar.\n         return [\n             pygram.python_grammar_no_print_statement_no_exec_statement,\n             pygram.python_grammar_no_print_statement,\n         ]\n     else:\n-        return [pygram.python_grammar_no_print_statement, pygram.python_grammar]\n+        return [pygram.python_grammar]\n \n \n def lib2to3_parse(src_txt: str, target_versions: Iterable[TargetVersion] = ()) -> Node:\n",
+ "clean_diff": "diff --git a/black.py b/black.py\nindex b7276663..c44bc9b4 100644\n--- a/black.py\n+++ b/black.py\n@@ -726,13 +726,13 @@ def get_grammars(target_versions: Set[TargetVersion]) -> List[Grammar]:\n     if not target_versions:\n         return GRAMMARS\n     elif all(not version.is_python2() for version in target_versions):\n-        # Python 2-compatible code, so don't try Python 3 grammar.\n+        # Python 3-compatible code, so don't try Python 2 grammar\n         return [\n             pygram.python_grammar_no_print_statement_no_exec_statement,\n             pygram.python_grammar_no_print_statement,\n         ]\n     else:\n-        return [pygram.python_grammar]\n+        return [pygram.python_grammar_no_print_statement, pygram.python_grammar]\n \n \n def lib2to3_parse(src_txt: str, target_versions: Iterable[TargetVersion] = ()) -> Node:\n",
+ "fix_patch": "diff --git a/black.py b/black.py\nindex b7276663..c44bc9b4 100644\n--- a/black.py\n+++ b/black.py\n@@ -726,13 +726,13 @@ def get_grammars(target_versions: Set[TargetVersion]) -> List[Grammar]:\n     if not target_versions:\n         return GRAMMARS\n     elif all(not version.is_python2() for version in target_versions):\n-        # Python 2-compatible code, so don't try Python 3 grammar.\n+        # Python 3-compatible code, so don't try Python 2 grammar\n         return [\n             pygram.python_grammar_no_print_statement_no_exec_statement,\n             pygram.python_grammar_no_print_statement,\n         ]\n     else:\n-        return [pygram.python_grammar]\n+        return [pygram.python_grammar_no_print_statement, pygram.python_grammar]\n \n \n def lib2to3_parse(src_txt: str, target_versions: Iterable[TargetVersion] = ()) -> Node:\n",
+ "spans": [
+  [
+   729,
+   729
+  ],
+  [
+   735,
+   735
+  ]
+ ],
+ "enclosing": [
+  [
+   725,
+   735
+  ]
+ ],
+ "stratum": "modification",
+ "fix_matches_dataset_patch": true
+}

@@ -1,0 +1,171 @@
+{
+  "prompt_version": "v1",
+  "judge_model": "minimax/minimax-m3.1-flash:free",
+  "n_pairs": 20,
+  "agreement": "13/20",
+  "agreement_pct": 65.0,
+  "cohens_kappa": 0.3,
+  "judge_errors": 0,
+  "pairs": [
+    {
+      "case_id": "black-1",
+      "type": "buggy",
+      "finding": "The changes remove robust error handling for `ProcessPoolExecutor` instantiation",
+      "human": true,
+      "judge": false,
+      "reasoning": "The finding describes a regression, but the real patch actually adds the described OSError handling,"
+    },
+    {
+      "case_id": "black-10",
+      "type": "buggy",
+      "finding": "The change introduces new logic for calculating `current_column` when a tab char",
+      "human": true,
+      "judge": false,
+      "reasoning": "The real fix changes tab handling from a four-column increment to one, while the finding describes t"
+    },
+    {
+      "case_id": "fastapi-8",
+      "type": "buggy",
+      "finding": "The change removes the `route_class_override` parameter from `add_api_route` and",
+      "human": true,
+      "judge": false,
+      "reasoning": "The finding claims that `route_class_override` was removed, whereas the real fix adds it and uses it"
+    },
+    {
+      "case_id": "fastapi-8",
+      "type": "buggy",
+      "finding": "The removal of `route_class_override=type(route)` when re-adding routes (e.g., d",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding identifies the same defect fixed by the patch: re-added routes lost their custom APIRout"
+    },
+    {
+      "case_id": "httpie-1",
+      "type": "buggy",
+      "finding": "The change removes the filename trimming logic, which previously ensured that ge",
+      "human": true,
+      "judge": true,
+      "reasoning": "Both identify the same underlying defect: filenames exceeding the filesystem name limit must be trim"
+    },
+    {
+      "case_id": "luigi-18",
+      "type": "buggy",
+      "finding": "The change removes the condition `new_status != DISABLED`. This means that if a ",
+      "human": true,
+      "judge": false,
+      "reasoning": "The real fix prevents workers from overriding a scheduler disable while still allowing a worker-repo"
+    },
+    {
+      "case_id": "sanic-1",
+      "type": "buggy",
+      "finding": "The change from `appendleft` to `append` reverses the execution order of respons",
+      "human": true,
+      "judge": true,
+      "reasoning": "Both identify response middleware execution ordering at the same registration line, with the fix usi"
+    },
+    {
+      "case_id": "sanic-1",
+      "type": "buggy",
+      "finding": "This significant change in middleware execution order introduces a new behavior ",
+      "human": true,
+      "judge": false,
+      "reasoning": "The real fix changes response middleware insertion order by using appendleft, while the finding only"
+    },
+    {
+      "case_id": "scrapy-23",
+      "type": "buggy",
+      "finding": "The `base64.b64encode` function expects a bytes-like object as input. After this",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding identifies the same Python 3 bytes incompatibility that the fix resolves by converting t"
+    },
+    {
+      "case_id": "scrapy-23",
+      "type": "buggy",
+      "finding": "The `creds` variable, which is the result of `base64.b64encode`, is a bytes obje",
+      "human": true,
+      "judge": true,
+      "reasoning": "The finding identifies the same bytes-versus-str concatenation defect in the Proxy-Authorization hea"
+    },
+    {
+      "case_id": "black-1",
+      "type": "clean",
+      "finding": "The `try...except OSError` block at lines 621-623 is too narrow to catch all rel",
+      "human": false,
+      "judge": false,
+      "reasoning": "The production defect was an unhandled OSError during ProcessPoolExecutor creation, whereas the find"
+    },
+    {
+      "case_id": "black-1",
+      "type": "clean",
+      "finding": "The new error handling branch introduced by `except OSError` (lines 623-627) is ",
+      "human": false,
+      "judge": false,
+      "reasoning": "The real fix addresses an unhandled OSError when creating ProcessPoolExecutor by falling back to a N"
+    },
+    {
+      "case_id": "black-10",
+      "type": "clean",
+      "finding": "The change incorrectly calculates the `current_column` for tab characters. Previ",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding treats a tab's column increment of 1 as erroneous, whereas the real fix intentionally co"
+    },
+    {
+      "case_id": "fastapi-8",
+      "type": "clean",
+      "finding": "The change introduces a new feature allowing the override of the `APIRoute` clas",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding concerns missing test coverage, while the production fix implements custom route-class o"
+    },
+    {
+      "case_id": "httpie-1",
+      "type": "clean",
+      "finding": "The newly introduced functions (`trim_filename`, `get_filename_max_length`, `tri",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding flags missing test coverage for the new filename-trimming logic, whereas the production "
+    },
+    {
+      "case_id": "sanic-1",
+      "type": "clean",
+      "finding": "The change from `append` to `appendleft` on line 656 reverses the order in which",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding treats the prepend/LIFO behavior introduced by appendleft as the defect, whereas the rea"
+    },
+    {
+      "case_id": "scrapy-7",
+      "type": "clean",
+      "finding": "The change introduces explicit handling for form elements where the 'action' att",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding requests regression tests for the new behavior, while the production fix corrects URL re"
+    },
+    {
+      "case_id": "black-12",
+      "type": "synthetic_eval",
+      "finding": "Defect in black.py around line 880",
+      "human": false,
+      "judge": true,
+      "reasoning": "The finding points to the scalar loop and lambda tracking counters at lines 880\u2013881, which the fix r"
+    },
+    {
+      "case_id": "black-13",
+      "type": "synthetic_eval",
+      "finding": "Defect in blib2to3/pgen2/tokenize.py around line 519",
+      "human": false,
+      "judge": true,
+      "reasoning": "The finding points to the exact `token == 'def'` condition corrected by the patch to handle `async f"
+    },
+    {
+      "case_id": "black-2",
+      "type": "synthetic_eval",
+      "finding": "Defect in black.py around line 3119",
+      "human": false,
+      "judge": false,
+      "reasoning": "The finding only vaguely labels lines 3119-3125 as defective and does not identify the fixed root ca"
+    }
+  ]
+}
