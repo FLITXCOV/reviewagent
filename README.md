@@ -73,7 +73,7 @@ Every line number refers to the **new side** of the diff (the file after the cha
 
 ### 1. Development Split Baseline ($N = 10$ bugs, $N = 10$ clean controls)
 
-*Tuned baseline without retrieval on dev cases (`results/multicat_none.dev.json`):*
+*Earlier development run without retrieval on dev cases (`results/multicat_none.dev.json`, evaluated under Judge v1 before model pinning and Judge v2):*
 - **Recall (Lenient Location)**: 7 of 10 [39.7%, 89.2%]
 - **Recall (Strict Judge v1)**: 3 of 10 [10.8%, 60.3%]
 - **Clean FP Rate**: 0 of 10 [0.0%, 27.8%]
@@ -135,7 +135,8 @@ To eliminate model confounding, all calibration experiments were run using a sin
 - **Hunk Coordinate Integrity**: Verified via dedicated unit tests in [`tests/test_diffparse.py`](tests/test_diffparse.py) across all three unified diff hunk types: modifications, pure additions, and pure deletions.
 - **Fail-Fast Quota Trapping**: Traps daily API cap exhaustion via HTTP 429 `PerDay` detection to avoid retry sleep loops, while preserving exponential backoff for transient per-minute rate limits (tested in [`tests/test_providers.py`](tests/test_providers.py)).
 - **JSON Self-Repair**: One-shot repair prompting recovers when models return conversational text or markdown code fences.
-- **CI Clean-Checkout Safety**: `tests/conftest.py` detects local git clones. In GitHub Actions CI (clean checkout without cloned dataset repositories), pytest cleanly runs 60 offline tests and skips 4 repo-dependent tests (60 passed, 4 skipped in ~2s). When local dataset repos are cloned, all 64 tests execute and pass. Live evaluation experiments run locally against the BugsInPy dataset.
+- **CI Clean-Checkout Safety**: `tests/conftest.py` detects local git clones. In GitHub Actions CI (clean checkout without cloned dataset repositories), pytest cleanly runs 60 offline tests and skips 4 repo-dependent tests (60 passed, 4 skipped in ~2s). When local dataset repos are cloned, all 64 tests execute and pass.
+- **CI Evaluation Gating**: CI validates committed benchmark metrics against quality thresholds (`recall_lenient >= 0.30`, `fp_rate_clean <= 0.20`, `failed_nodes <= 5` via `eval.check_thresholds`). It validates committed evaluation results rather than re-running live API reviews during CI to operate cleanly without consuming daily provider quotas.
 
 ## Limitations
 
