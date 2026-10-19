@@ -114,7 +114,7 @@ To eliminate model confounding, all calibration experiments were run using a sin
    - **Asymmetric Error Profile**:
      * **False Accepts (Type I error / False Alarms): 0 of 10 (0.0%)**. The judge demonstrated 100% specificity on clean code and wrong-defect distractors, never accepting a false finding.
      * **False Rejections (Type II error / Misses): 9 of 10 (90.0%)**. The judge was hyper-conservative on true defect descriptions, rejecting almost all valid defect descriptions unless they matched patch wording closely.
-   - *Key Empirical Finding*: The prompt fix successfully resolved directionality on the tuning distribution ($\kappa = 0.700$), but held-out $\kappa$ remained at $0.100$ because the LLM judge exhibits extreme conservatism on unseen code (approaching a "reject everything" baseline). This demonstrates that prompt-tuned judges overfit small tuning distributions and proves that strict judged recall is depressed by judge conservatism rather than reviewer location misses. Location-overlap (lenient) recall remains the primary reliable metric.
+   - *Key Empirical Finding*: The prompt fix successfully resolved directionality on the tuning distribution ($\kappa = 0.700$), but held-out $\kappa$ remained at $0.100$ because the LLM judge exhibits extreme conservatism on unseen code (approaching a "reject everything" baseline). Furthermore, the held-out set incorporates negative distractors (wrong defects at true locations) and negative clean controls that the tuning set lacked, which also contributes to the divergence. This suggests that strict judged recall is depressed by judge conservatism and pair composition rather than reviewer location misses. Location-overlap (lenient) recall remains the primary reliable metric.
 
 ## Qualitative Case Anecdotes & Failure Analysis
 
@@ -131,7 +131,7 @@ To eliminate model confounding, all calibration experiments were run using a sin
 ## Limitations
 
 - **Sample Size ($N = 3$)**: The pilot test run has wide confidence intervals and serves to verify pipeline mechanics, not comparative claims.
-- **Judge Generalization**: Prompt directionality tuning improved in-sample performance ($\kappa = 0.700$), but did not eliminate extreme conservatism out-of-sample ($\kappa = 0.100$ on held-out test cases).
+- **Judge Generalization**: Prompt directionality tuning improved in-sample performance ($\kappa = 0.700$), but did not generalize out-of-sample ($\kappa = 0.100$ on held-out test cases), where pair composition differences (distractors) and extreme judge conservatism depressed agreement.
 - **Reversed Fix Artifacts**: Reversing fix commits creates synthetic bug presentations that may occasionally differ from organic development history.
 
 ## Project Structure
@@ -162,4 +162,4 @@ reviewagent/
 
 ## Resume Bullet
 
-> Built ReviewAgent, a Python PR-review agent with deterministic AST-based repository context retrieval, cached stdlib LLM clients, structured findings, and eval-gated CI. Developed a two-stage BugsInPy evaluation harness with location and LLM-judge scoring; measured judge-human agreement on labeled pairs (κ = 0.10 on held-out) and documented its conservatism. Added 63 unit tests covering diff coordinate mapping, retrieval, scoring, and pipeline behavior.
+> Built ReviewAgent, a Python PR-review agent with deterministic AST-based repository context retrieval, cached stdlib LLM clients, structured findings, and eval-gated CI. Built a two-stage BugsInPy evaluation harness; in a controlled judge study (fixed model), a directional prompt fix raised tuning-set agreement κ from 0.30 to 0.70 but did not generalize (held-out κ = 0.10), showing the judge’s strict metrics are unreliable. 63 unit tests cover diff mapping, retrieval, scoring, and pipeline behavior.
