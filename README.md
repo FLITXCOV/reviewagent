@@ -79,6 +79,7 @@ Every line number refers to the **new side** of the diff (the file after the cha
 - **Clean FP Rate**: 0 of 10 [0.0%, 27.8%]
 - **Precision (Strict v1)**: 3 of 17 [6.2%, 41.0%]
 - **Total LLM Calls**: 38
+- **Failed Calls (Quota)**: 4 review calls failed due to quota limits, so these dev numbers are incomplete (clean FP 0/10 is partly trivial, and 7/10 recall is an undercount).
 
 #### Failure Taxonomy: Why Did 4 Lenient Hits Fail Strict Judging?
 In a manual review of the 4 lenient-but-not-strict dev hits, 2 were judge directionality errors, 1 was category framing, and 1 involved error-condition nuance (reported as raw counts, not generalizable percentages):
@@ -136,7 +137,7 @@ To eliminate model confounding, all calibration experiments were run using a sin
 - **Fail-Fast Quota Trapping**: Traps daily API cap exhaustion via HTTP 429 `PerDay` detection to avoid retry sleep loops, while preserving exponential backoff for transient per-minute rate limits (tested in [`tests/test_providers.py`](tests/test_providers.py)).
 - **JSON Self-Repair**: One-shot repair prompting recovers when models return conversational text or markdown code fences.
 - **CI Clean-Checkout Safety**: `tests/conftest.py` detects local git clones. In GitHub Actions CI (clean checkout without cloned dataset repositories), pytest cleanly runs 60 offline tests and skips 4 repo-dependent tests (60 passed, 4 skipped in ~2s). When local dataset repos are cloned, all 64 tests execute and pass.
-- **CI Evaluation Gating**: CI validates committed benchmark metrics against quality thresholds (`recall_lenient >= 0.30`, `fp_rate_clean <= 0.20`, `failed_nodes <= 5` via `eval.check_thresholds`). It validates committed evaluation results rather than re-running live API reviews during CI to operate cleanly without consuming daily provider quotas.
+- **CI Evaluation Gating**: CI validates committed benchmark metrics against quality thresholds (`recall_lenient >= 0.30`, `fp_rate_clean <= 0.20`, `failed_nodes <= 5` via `eval.check_thresholds`). The `failed_nodes_max: 5` threshold was set to allow the early dev baseline file (which had 4 quota failures) to pass. It validates committed evaluation results rather than re-running live API reviews during CI to operate cleanly without consuming daily provider quotas.
 
 ## Limitations
 
