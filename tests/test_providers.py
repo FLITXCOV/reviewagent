@@ -73,6 +73,21 @@ def test_429_is_transient_with_retry_after_and_client_recovers(monkeypatch, tmp_
     srv2.shutdown()
 
 
+def test_daily_quota_429_fails_immediately_without_retries(monkeypatch, tmp_path):
+    srv, seen = serve([(429, {}, {"error": "Resource exhausted: PerDay quota reached"})])
+    monkeypatch.setenv("GEMINI_API_KEY", "k")
+    sleeps = []
+    c = LLMClient(providers.gemini_backend(f"http://127.0.0.1:{srv.server_port}"), "m", tmp_path,
+                  max_attempts=5, sleep=sleeps.append)
+    with pytest.raises(providers.DailyQuotaError):
+        c.complete("s", "u")
+    assert len(seen) == 1
+    assert c.network_calls == 1
+    assert c.retries == 0
+    assert sleeps == []
+    srv.shutdown()
+
+
 def test_persistent_503_ends_in_llm_unavailable(monkeypatch, tmp_path):
     srv, _ = serve([(503, {}, {"error": "down"})])
     monkeypatch.setenv("GEMINI_API_KEY", "k")

@@ -36,7 +36,7 @@ Each mode can run with or without **deterministic symbol retrieval** (AST-based 
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-pytest -q                          # expect: 58 passed, 4 skipped
+pytest -q                          # expect: 60 passed, 4 skipped on clean checkout
 
 # Build the evaluation dataset (clones 9 repos, ~230 MB)
 git clone https://github.com/soarsmu/BugsInPy data/BugsInPy
@@ -103,9 +103,10 @@ To isolate prompting mode vs. AST retrieval without model confounding, three arm
 | `multicat_symbol` | Multi-focus | Deterministic AST | 1 of 5 (20.0%) | 1 of 5 (20.0%) | 0 of 5 (0.0%) | 0.20 | 10 |
 
 *Observations & Trade-Offs*:
-- **Prompting & Severity Threshold (`baseline` vs. `multicat_none`)**: The metric `fp_rate_clean` is defined by the presence of a **high-severity** finding on a clean diff (`n_high > 0`). Both arms produced the identical total volume of findings on clean code (0.40 findings/diff); the 1/5 vs. 0/5 difference represents a single finding on `black-2` shifting from high to medium severity, rather than a suppression of clean findings.
-- **Isolated Retrieval Effect (`multicat_none` vs. `multicat_symbol`)**: Holding the multi-focus prompt constant, AST retrieval produced fewer total findings on clean diffs (0.40 $\rightarrow$ 0.20 findings/diff) with no change in false positives (0 of 5 vs. 0 of 5), while lenient recall dropped from 2 of 5 to 1 of 5 (losing the defect in `black-13` due to increased conservatism under larger context).
-- **Interview-Defensible Interpretation**: On 5 `black` cases, AST retrieval lost one bug and produced fewer findings on clean diffs, with no change in false positives. At $N = 5$ that’s a trade-off signal, not a finding. At this sample size, Wilson intervals overlap substantially ([11.8%, 76.9%] vs. [3.6%, 62.4%]); results are reported strictly as raw case counts.
+- **Prompting & Severity Threshold (`baseline` vs. `multicat_none`)**: Both arms achieved 2 of 5 recall, but on different bugs: `baseline` caught `black-13` and `black-4`, while `multicat_none` caught `black-12` and `black-4`. This shows how much a single case can swing metrics at $N = 5$ and weakens any general claim about prompting effects. On clean diffs, both arms produced the identical total volume of findings (0.40 findings/diff; 2 across 5 diffs); the 1/5 vs. 0/5 clean FP difference represents a single finding on `black-2` shifting from high to medium severity, rather than a reduction in clean findings.
+- **Isolated Retrieval Effect (`multicat_none` vs. `multicat_symbol`)**: Holding the multi-focus prompt constant, AST retrieval produced one fewer finding on clean diffs (1 vs. 2 across 5 diffs, 0.40 $\rightarrow$ 0.20 findings/diff) with no change in false positives (0 of 5 vs. 0 of 5). However, lenient recall dropped from 2 of 5 to 1 of 5, missing the defect in `black-12` (the exact cause was not established).
+- **Strict vs. Lenient Alignment**: In every pilot arm, strict judged recall equaled lenient location recall (the judge accepted every location hit). In contrast, on the held-out calibration set, the judge rejected 9 of 10 true defects. A likely reason for this divergence is that pilot findings were generated organically by the real reviewer, whereas the held-out calibration pairs used hand-written defect summaries.
+- **Interview-Defensible Interpretation**: On 5 `black` cases, AST retrieval lost one bug (`black-12`) and produced one fewer finding on clean diffs, with no change in false positives. At $N = 5$ that’s a trade-off signal, not a finding. At this sample size, Wilson intervals overlap substantially ([11.8%, 76.9%] vs. [3.6%, 62.4%]); results are reported strictly as raw case counts.
 
 ### 3. Judge Calibration: In-Sample vs. Held-Out Generalization
 
@@ -127,14 +128,14 @@ To eliminate model confounding, all calibration experiments were run using a sin
 
 1. **AST Context Tradeoff Anecdote (Precision vs. Recall)**:
    In `black-2`, the baseline reviewer produced a false alarm (flagging sibling traversal as an infinite loop). AST retrieval grounded the context with the enclosing method and traversal logic, suppressing the false positive (0 of 3 clean FP). However, the additional context also led the model to remain conservative on other cases, producing fewer findings overall.
-2. **Pinpoint Defect Detection (`black-13`)**:
-   Across arms, the reviewer successfully caught that restricting token promotion from `token in ('def', 'for')` to `token == 'def'` would break parsing of `async for` loops, citing exact line ranges and grammar syntax implications.
+2. **Interactive CLI Demo vs. Evaluation Pilot (`black-13`)**:
+   `review.py --demo` runs an interactive review of `black-13` and detects the `async for` regression at `blib2to3/pgen2/tokenize.py:519-526`. In the batch evaluation pilot, `black-13` was caught by `baseline` mode, but missed under `multicat_none` and `multicat_symbol` when repos were checked out to `buggy_commit`.
 
 ## Robustness & Edge Cases
-- **Hunk Coordinate Integrity**: Verified via dedicated unit tests in [`tests/test_diffparse.py`](file:///C:/Projects/code%20rev/reviewagent/reviewagent/tests/test_diffparse.py) across all three unified diff hunk types: modifications, pure additions, and pure deletions.
-- **Fail-Fast Quota Trapping**: Traps daily API cap exhaustion via HTTP 429 `PerDay` detection to avoid retry sleep loops, while preserving exponential backoff for transient per-minute rate limits.
+- **Hunk Coordinate Integrity**: Verified via dedicated unit tests in [`tests/test_diffparse.py`](tests/test_diffparse.py) across all three unified diff hunk types: modifications, pure additions, and pure deletions.
+- **Fail-Fast Quota Trapping**: Traps daily API cap exhaustion via HTTP 429 `PerDay` detection to avoid retry sleep loops, while preserving exponential backoff for transient per-minute rate limits (tested in [`tests/test_providers.py`](tests/test_providers.py)).
 - **JSON Self-Repair**: One-shot repair prompting recovers when models return conversational text or markdown code fences.
-- **CI Clean-Checkout Safety**: `tests/conftest.py` detects local git clones. In GitHub Actions CI (clean checkout without cloned dataset repositories), pytest cleanly runs 59 offline tests and skips 4 repo-dependent tests (59 passed, 4 skipped in ~2s). When local dataset repos are cloned, all 63 tests execute and pass. Live evaluation experiments run locally against the BugsInPy dataset.
+- **CI Clean-Checkout Safety**: `tests/conftest.py` detects local git clones. In GitHub Actions CI (clean checkout without cloned dataset repositories), pytest cleanly runs 60 offline tests and skips 4 repo-dependent tests (60 passed, 4 skipped in ~2s). When local dataset repos are cloned, all 64 tests execute and pass. Live evaluation experiments run locally against the BugsInPy dataset.
 
 ## Limitations
 
