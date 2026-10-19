@@ -9,3 +9,5 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install -r requirements.txt
       - run: pytest -q
+      - name: Check evaluation thresholds
+        run: python -m eval.check_thresholds results/multicat_none.dev.json eval/thresholds.json
