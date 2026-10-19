@@ -90,20 +90,22 @@ In a manual review of the 4 lenient-but-not-strict dev hits, 2 were judge direct
 | `black-10` | Tab character logic alters `current_column` | Column math defect | **Correct location, wrong category framing** (Reviewer framed finding around missing tests rather than logic defect). |
 | `black-1` | `ProcessPoolExecutor` error handling removed | Windows crash on pool failure | **Correct location, error semantic nuance** (Reviewer cited generic pool handling rather than specific OS worker failure). |
 
-### 2. Controlled Arm Comparison: Prompting vs. AST Retrieval ($N = 5$ bugs, $N = 5$ clean controls)
+### 2. Controlled Arm Comparison: Prompting vs. AST Retrieval ($N = 5$ bugs, $N = 5$ clean controls from `psf/black`)
 
-To isolate both prompting mode and AST retrieval without model confounding, three arms were evaluated on the exact same 5 test cases (`black-12`, `black-13`, `black-2`, `black-3`, `black-4`) using the identical locked cross-vendor model pair (**Reviewer**: `gemini-3.5-flash-lite`, **Judge**: `minimax/minimax-m3.1-flash:free`):
+To isolate prompting mode vs. AST retrieval without model confounding, three arms were evaluated on the exact same 5 test cases (`black-12`, `black-13`, `black-2`, `black-3`, `black-4`—all from `psf/black`) using the identical locked cross-vendor model pair (**Reviewer**: `gemini-3.5-flash-lite`, **Judge**: `minimax/minimax-m3.1-flash:free`).
+
+*Note on prompt modes*: `multicat` is a single multi-focus prompt covering all four review categories (logic, error handling, security, tests) in one LLM call, rather than multiple sequential passes.
 
 | Arm | Mode | Retrieval | Recall (Lenient) | Recall (Strict, Judged) | Clean FP Rate | Findings / Clean Diff | LLM Calls |
 |---|---|---|---|---|---|---|---|
-| `baseline` | Generic | None | 2 of 5 (40.0%) | 2 of 5 (40.0%) | 1 of 5 (20.0%) | 0.40 | 10 |
-| `multicat_none` | Multi-category | None | 2 of 5 (40.0%) | 2 of 5 (40.0%) | 0 of 5 (0.0%) | 0.40 | 10 |
-| `multicat_symbol` | Multi-category | Deterministic AST | 1 of 5 (20.0%) | 1 of 5 (20.0%) | 0 of 5 (0.0%) | 0.20 | 10 |
+| `baseline` | Generic prompt | None | 2 of 5 (40.0%) | 2 of 5 (40.0%) | 1 of 5 (20.0%) | 0.40 | 10 |
+| `multicat_none` | Multi-focus | None | 2 of 5 (40.0%) | 2 of 5 (40.0%) | 0 of 5 (0.0%) | 0.40 | 10 |
+| `multicat_symbol` | Multi-focus | Deterministic AST | 1 of 5 (20.0%) | 1 of 5 (20.0%) | 0 of 5 (0.0%) | 0.20 | 10 |
 
-*Observations & Context Trade-Off*:
-- **Prompt Effect (`baseline` vs. `multicat_none`)**: Switching from a generic prompt to structured multi-category guidance reduced the severity of the false alarm on `black-2` from high to medium, lowering the clean false-positive rate (1 of 5 $\rightarrow$ 0 of 5) while holding recall unchanged at 2 of 5.
-- **Retrieval Effect (`multicat_none` vs. `multicat_symbol`)**: Adding deterministic AST repository context halved spurious findings on clean diffs (0.40 $\rightarrow$ 0.20 findings/diff), but increased model conservatism on bug detection, dropping recall from 2 of 5 to 1 of 5 (a single case difference on `black-13`).
-- **Defensible Interpretation**: On 5 `black` cases, AST retrieval had 1 fewer false positive and 1 fewer bug caught compared to baseline. At this $N$, that is a trade-off signal, not a generalized finding. At $N = 5$, Wilson score intervals overlap substantially ([11.8%, 76.9%] vs. [3.6%, 62.4%]); results are reported strictly as raw case counts.
+*Observations & Trade-Offs*:
+- **Prompting & Severity Threshold (`baseline` vs. `multicat_none`)**: The metric `fp_rate_clean` is defined by the presence of a **high-severity** finding on a clean diff (`n_high > 0`). Both arms produced the identical total volume of findings on clean code (0.40 findings/diff); the 1/5 vs. 0/5 difference represents a single finding on `black-2` shifting from high to medium severity, rather than a suppression of clean findings.
+- **Isolated Retrieval Effect (`multicat_none` vs. `multicat_symbol`)**: Holding the multi-focus prompt constant, AST retrieval produced fewer total findings on clean diffs (0.40 $\rightarrow$ 0.20 findings/diff) with no change in false positives (0 of 5 vs. 0 of 5), while lenient recall dropped from 2 of 5 to 1 of 5 (losing the defect in `black-13` due to increased conservatism under larger context).
+- **Interview-Defensible Interpretation**: On 5 `black` cases, AST retrieval lost one bug and produced fewer findings on clean diffs, with no change in false positives. At $N = 5$ that’s a trade-off signal, not a finding. At this sample size, Wilson intervals overlap substantially ([11.8%, 76.9%] vs. [3.6%, 62.4%]); results are reported strictly as raw case counts.
 
 ### 3. Judge Calibration: In-Sample vs. Held-Out Generalization
 
