@@ -138,7 +138,7 @@ To eliminate model confounding, all calibration experiments were run using a sin
 
 ## Limitations
 
-- **Small-N Arm Pilot Comparison ($N = 5$)**: The baseline vs. AST retrieval pilot comparison is evaluated on 5 BugsInPy test cases (all from `psf/black`). While model-controlled, the sample size has wide confidence intervals and serves to illustrate context trade-offs rather than definitive benchmark superiority.
+- **Small-N Arm Pilot Comparison ($N = 5$)**: The baseline vs. AST retrieval pilot comparison is evaluated on 5 BugsInPy test cases (all from `psf/black`). While model-controlled, the sample size has wide confidence intervals and serves to illustrate context trade-offs rather than definitive superiority.
 - **Hand-Curated Held-Out Findings**: The 20 held-out validation pairs evaluate judge discernment on hand-curated defect descriptions and synthetic distractors rather than end-to-end reviewer outputs.
 - **Judge Generalization**: Prompt directionality tuning improved in-sample performance ($\kappa = 0.700$), but did not generalize out-of-sample ($\kappa = 0.100$ on held-out test cases), where pair composition differences (distractors) and extreme judge conservatism depressed agreement.
 - **Reversed Fix Artifacts**: Reversing fix commits creates synthetic bug presentations that may occasionally differ from organic development history.
@@ -162,7 +162,7 @@ reviewagent/
     run_eval.py           # CLI to run an experiment arm
     check_thresholds.py   # CI gate
     thresholds.json       # Quality thresholds for CI
-  tests/                  # 63 unit tests (diffparse, symbols, pipeline, scoring, real-data e2e)
+  tests/                  # 60+ unit tests (diffparse, symbols, pipeline, scoring, real-data e2e)
   data/                   # Built cases + cloned repos (not committed)
   cache/                  # LLM response cache
   results/                # Experiment outputs
@@ -171,4 +171,4 @@ reviewagent/
 
 ## Resume Bullet
 
-> Built ReviewAgent, a Python PR-review agent with deterministic AST-based repository context retrieval, cached stdlib LLM clients, structured findings, and eval-gated CI. Built a two-stage BugsInPy evaluation harness; in a controlled judge study (fixed model), a directional prompt fix raised tuning-set agreement κ from 0.30 to 0.70 but did not generalize (held-out κ = 0.10), showing the judge’s strict metrics are unreliable. 63 unit tests cover diff mapping, retrieval, scoring, and pipeline behavior.
+> Built ReviewAgent, a Python PR-review agent with deterministic AST-based repository context retrieval, cached stdlib LLM clients, structured findings, and eval-gated CI. Built a two-stage BugsInPy evaluation harness; in a judge study with the judge model held fixed, a directional prompt fix raised tuning-set agreement from κ = 0.30 to 0.70 but did not generalize on 20 unseen pairs (κ = 0.10), indicating the judge’s strict metrics were unreliable. Added 60+ unit tests covering diff mapping, retrieval, scoring, and pipeline behavior.
