@@ -90,7 +90,7 @@ In a manual review of the 4 lenient-but-not-strict dev hits, 2 were judge direct
 | `black-10` | Tab character logic alters `current_column` | Column math defect | **Correct location, wrong category framing** (Reviewer framed finding around missing tests rather than logic defect). |
 | `black-1` | `ProcessPoolExecutor` error handling removed | Windows crash on pool failure | **Correct location, error semantic nuance** (Reviewer cited generic pool handling rather than specific OS worker failure). |
 
-### 2. Controlled Arm Comparison: Prompting vs. AST Retrieval ($N = 5$ bugs, $N = 5$ clean controls from `psf/black`)
+### 2. Controlled Arm Pilot Comparison: Prompting vs. AST Retrieval ($N = 5$ bugs, $N = 5$ clean controls from `psf/black`)
 
 To isolate prompting mode vs. AST retrieval without model confounding, three arms were evaluated on the exact same 5 test cases (`black-12`, `black-13`, `black-2`, `black-3`, `black-4`—all from `psf/black`) using the identical locked cross-vendor model pair (**Reviewer**: `gemini-3.5-flash-lite`, **Judge**: `minimax/minimax-m3.1-flash:free`).
 
@@ -112,16 +112,16 @@ To isolate prompting mode vs. AST retrieval without model confounding, three arm
 To eliminate model confounding, all calibration experiments were run using a single, fixed cross-vendor judge model (**MiniMax M3.1 Flash** via OpenRouter, paired with Gemini reviewer):
 
 1. **In-Sample Tuning Set ($N = 20$, `results/judge_calibration_v1.json` vs. `v2.json`)**:
-   - Initial Baseline Prompt (v1): 13 of 20 agreement (65.0%), Cohen's $\kappa = 0.300$.
+   - Initial Baseline Prompt (v1): 13 of 20 agreement (65.0%), weak agreement with Cohen's $\kappa = 0.300$.
    - Directional Prompt (v2): 17 of 20 agreement (85.0%), Cohen's $\kappa = 0.700$.
    - *Result*: With the model held constant, the directional prompt fix significantly improved in-sample agreement ($\kappa: 0.300 \rightarrow 0.700$). *(Note: `results/judge_calibration_v2.json` supersedes the preliminary `judge_calibration.json`, which had an unhandled Pair 17 quota crash and older cache keys).*
 2. **Held-Out Validation Set ($N = 20$, `results/judge_calibration_heldout.json`)**:
    - Evaluated on 20 unseen pairs across 10 held-out test cases (`fastapi`, `httpie`, `luigi`, `sanic`, `scrapy`, `thefuck`, `tqdm`) using the same MiniMax judge model.
    - Human-Judge Agreement: **11 of 20 (55.0%)**, Cohen's $\kappa = 0.100$.
    - **Asymmetric Error Profile**:
-     * **False Accepts (Type I error / False Alarms): 0 of 10 (0.0%)**. The judge demonstrated 100% specificity on clean code and wrong-defect distractors, never accepting a false finding.
-     * **False Rejections (Type II error / Misses): 9 of 10 (90.0%)**. The judge was hyper-conservative on true defect descriptions, rejecting almost all valid defect descriptions unless they matched patch wording closely.
-   - *Key Empirical Finding*: The prompt fix successfully resolved directionality on the tuning distribution ($\kappa = 0.700$), but held-out $\kappa$ remained at $0.100$ because the LLM judge exhibits extreme conservatism on unseen code (approaching a "reject everything" baseline). Furthermore, the held-out set incorporates negative distractors (wrong defects at true locations) and negative clean controls that the tuning set lacked, which also contributes to the divergence. This suggests that strict judged recall is depressed by judge conservatism and pair composition rather than reviewer location misses. Location-overlap (lenient) recall remains the primary reliable metric.
+     * **False Accepts (Type I error / False Alarms): 0 of 10 (0.0%)**.
+     * **False Rejections (Type II error / Misses): 9 of 10 (90.0%)**.
+   - *Analysis*: The judge accepted only 1 of 20 pairs total, so it behaved close to rejecting everything. Specifically, it rejected 9 of 10 human-labeled true-defect findings while accepting 0 of 10 non-defect findings, so strict recall is limited more by judge false rejections than by reviewer localization. Furthermore, the held-out set includes negative distractors and clean controls that the tuning set lacked, so the $\kappa$ drop may partly reflect pair mix rather than overfitting alone. Lenient location-overlap recall remains the primary reliable metric.
 
 ## Qualitative Case Anecdotes & Failure Analysis
 
@@ -138,7 +138,7 @@ To eliminate model confounding, all calibration experiments were run using a sin
 
 ## Limitations
 
-- **Small-N Arm Benchmark ($N = 5$)**: The baseline vs. AST retrieval comparison is evaluated on 5 BugsInPy test cases (all from `psf/black`). While model-controlled, the sample size has wide confidence intervals and serves to illustrate context trade-offs rather than definitive benchmark supremacy.
+- **Small-N Arm Pilot Comparison ($N = 5$)**: The baseline vs. AST retrieval pilot comparison is evaluated on 5 BugsInPy test cases (all from `psf/black`). While model-controlled, the sample size has wide confidence intervals and serves to illustrate context trade-offs rather than definitive benchmark superiority.
 - **Hand-Curated Held-Out Findings**: The 20 held-out validation pairs evaluate judge discernment on hand-curated defect descriptions and synthetic distractors rather than end-to-end reviewer outputs.
 - **Judge Generalization**: Prompt directionality tuning improved in-sample performance ($\kappa = 0.700$), but did not generalize out-of-sample ($\kappa = 0.100$ on held-out test cases), where pair composition differences (distractors) and extreme judge conservatism depressed agreement.
 - **Reversed Fix Artifacts**: Reversing fix commits creates synthetic bug presentations that may occasionally differ from organic development history.
