@@ -12,8 +12,8 @@ __pycache__/
 data/BugsInPy/
 data/repos/
 
-# Cache (commit the smoke-test subset; .gitignore the rest selectively if needed)
-# cache/
+# Cache (local LLM response cache)
+cache/
 
 # Results (commit these — they are the deliverable)
 # results/
