@@ -1,6 +1,6 @@
 # ReviewAgent
 
-An agentic pull-request reviewer for Python, benchmarked on real historical bugs from [BugsInPy](https://github.com/soarsmu/BugsInPy), with retrieval ablations, a cross-model judge, and eval-gated CI.
+An agentic pull-request reviewer for Python, evaluated on real historical bugs from [BugsInPy](https://github.com/soarsmu/BugsInPy), with retrieval ablations, a cross-model judge, and eval-gated CI.
 
 <!-- TODO: Add a demo GIF showing a real review -->
 
