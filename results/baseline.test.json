@@ -1,57 +1,59 @@
 {
  "summary": {
-  "n_buggy": 3,
-  "n_clean": 3,
+  "n_buggy": 5,
+  "n_clean": 5,
   "recall_lenient": {
-   "k": 3,
-   "n": 3,
-   "pct": 100.0,
-   "ci_low": 43.84939195509823,
-   "ci_high": 100.0
-  },
-  "recall_strict": {
-   "k": 2,
-   "n": 3,
-   "pct": 66.66666666666667,
-   "ci_low": 20.76549551264879,
-   "ci_high": 93.85096847238394
-  },
-  "by_stratum": {
-   "modification": {
-    "lenient": {
-     "k": 3,
-     "n": 3,
-     "pct": 100.0,
-     "ci_low": 43.84939195509823,
-     "ci_high": 100.0
-    },
-    "strict": {
-     "k": 2,
-     "n": 3,
-     "pct": 66.66666666666667,
-     "ci_low": 20.76549551264879,
-     "ci_high": 93.85096847238394
-    }
-   }
-  },
-  "fp_rate_clean": {
-   "k": 1,
-   "n": 3,
-   "pct": 33.333333333333336,
-   "ci_low": 6.14903152761605,
-   "ci_high": 79.23450448735122
-  },
-  "findings_per_clean_diff": 0.3333333333333333,
-  "precision_strict": {
    "k": 2,
    "n": 5,
    "pct": 40.0,
    "ci_low": 11.76182311592533,
    "ci_high": 76.9280067791163
   },
+  "recall_strict": {
+   "k": 2,
+   "n": 5,
+   "pct": 40.0,
+   "ci_low": 11.76182311592533,
+   "ci_high": 76.9280067791163
+  },
+  "by_stratum": {
+   "modification": {
+    "lenient": {
+     "k": 2,
+     "n": 5,
+     "pct": 40.0,
+     "ci_low": 11.76182311592533,
+     "ci_high": 76.9280067791163
+    },
+    "strict": {
+     "k": 2,
+     "n": 5,
+     "pct": 40.0,
+     "ci_low": 11.76182311592533,
+     "ci_high": 76.9280067791163
+    }
+   }
+  },
+  "fp_rate_clean": {
+   "k": 1,
+   "n": 5,
+   "pct": 20.0,
+   "ci_low": 3.6223160969787447,
+   "ci_high": 62.44717358814613
+  },
+  "findings_per_clean_diff": 0.4,
+  "precision_strict": {
+   "k": 2,
+   "n": 4,
+   "pct": 50.0,
+   "ci_low": 15.003570882017147,
+   "ci_high": 84.99642911798286
+  },
   "arm": "baseline",
-  "llm_calls": 16,
-  "retries": 10,
+  "reviewer_model": "gemini-3.5-flash-lite",
+  "judge_model": "minimax/minimax-m3.1-flash:free",
+  "llm_calls": 10,
+  "retries": 0,
   "failed_nodes": 0,
   "hunk_splits": 0,
   "judge_errors": 0
@@ -62,34 +64,7 @@
    "stratum": "modification",
    "buggy": {
     "summary": "",
-    "findings": [
-     {
-      "file": "black.py",
-      "line_start": 981,
-      "line_end": 986,
-      "category": "logic",
-      "severity": "high",
-      "confidence": 0.95,
-      "message": "Replacing the `_lambda_argument_depths` stack with a simple counter `_lambda_arguments` removes the depth check (`self._lambda_argument_depths[-1] == self.depth`). When a lambda defines a default parameter value containing a colon (such as a dictionary literal like `lambda x={1: 2}: x` or a slice like `lambda x=a[1:2]: x`), the colon inside the default value will match line 983 because `_lambda_arguments > 0`. This prematurely decrements `self.depth` and `_lambda_arguments` at the wrong nesting level, causing corrupted depth tracking and incorrect code formatting.",
-      "evidence": [
-       "if self._lambda_arguments and leaf.type == token.COLON:"
-      ],
-      "suggested_fix": "Restore the `_lambda_argument_depths: List[int]` stack and check `self._lambda_argument_depths and self._lambda_argument_depths[-1] == self.depth` before popping and decrementing depth."
-     },
-     {
-      "file": "black.py",
-      "line_start": 959,
-      "line_end": 964,
-      "category": "logic",
-      "severity": "medium",
-      "confidence": 0.95,
-      "message": "Replacing the `_for_loop_depths` stack with a simple counter `_for_loop_variable` removes the check verifying that the `in` keyword occurs at the same nesting depth as the corresponding `for` keyword (`self._for_loop_depths[-1] == self.depth`). If an `in` keyword appears inside a nested expression within the loop target (e.g. `for (x if a in b else y) in z:`), `maybe_decrement_after_for_loop_variable` will trigger prematurely at a higher depth level, incorrectly decrementing `self.depth` and corrupting bracket depth tracking.",
-      "evidence": [
-       "if self._for_loop_variable and leaf.type == token.NAME and leaf.value == \"in\":"
-      ],
-      "suggested_fix": "Restore the `_for_loop_depths: List[int]` stack and check `self._for_loop_depths and self._for_loop_depths[-1] == self.depth` before popping and decrementing depth."
-     }
-    ],
+    "findings": [],
     "failed_nodes": [],
     "retries": 0,
     "hunk_splits": 0,
@@ -100,10 +75,10 @@
     "summary": "",
     "findings": [],
     "failed_nodes": [],
-    "retries": 1,
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 2
+    "llm_calls": 1
    }
   },
   {
@@ -118,29 +93,29 @@
       "line_end": 525,
       "category": "logic",
       "severity": "high",
-      "confidence": 0.95,
-      "message": "Changing `if token in ('def', 'for'):` to `if token == 'def':` breaks `async for` tokenization. When `token` is `'for'` and `stashed` is `'async'`, the `async` word will no longer be yielded as an `ASYNC` token (it falls through as a `NAME` token), causing syntax parsing failures for `async for` statements.",
+      "confidence": 1.0,
+      "message": "The change removes the condition `if token == 'def':` guarding `async_def = True`, but the outer `if token == 'def':` (line 519) means this code only runs when `token == 'def'`. However, `for` loops can also be preceded by `async` (e.g., `async for ...`). Because `for` was removed from the check on line 519, `async for` loops will no longer be correctly recognized as asynchronous, leading to syntax errors or incorrect tokenization.",
       "evidence": [
        "-                     if token in ('def', 'for'):",
        "+                     if token == 'def':"
       ],
-      "suggested_fix": "                     if token in ('def', 'for'):\n                         if (stashed\n                                 and stashed[0] == NAME\n                                 and stashed[1] == 'async'):\n\n                             if token == 'def':\n                                 async_def = True\n                                 async_def_indent = indents[-1]"
+      "suggested_fix": "Restore the check for 'for' or handle 'async for' appropriately."
      }
     ],
     "failed_nodes": [],
-    "retries": 3,
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 4
+    "llm_calls": 1
    },
    "clean": {
     "summary": "",
     "findings": [],
     "failed_nodes": [],
-    "retries": 2,
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 3
+    "llm_calls": 1
    }
   },
   {
@@ -148,55 +123,120 @@
    "stratum": "modification",
    "buggy": {
     "summary": "",
-    "findings": [
-     {
-      "file": "black.py",
-      "line_start": 3119,
-      "line_end": 3130,
-      "category": "logic",
-      "severity": "high",
-      "confidence": 0.95,
-      "message": "A '# fmt: on' comment on a child node inside `container` will be ignored. For AST `Node` objects, `container.prefix` only returns the prefix of its first leaf. If `# fmt: on` occurs on a subsequent child/leaf within `container`, `is_fmt_on` will evaluate to `False`, causing the loop to yield the entire `container` block as unformatted and skip processing `# fmt: on`.",
-      "evidence": [
-       "is_fmt_on = False",
-       "for comment in list_comments(container.prefix, is_endmarker=False):",
-       "if is_fmt_on:",
-       "    return",
-       "yield container"
-      ],
-      "suggested_fix": "Reintroduce inspection of `container.children` to detect `# fmt: on` comments inside child nodes before yielding the parent `container`."
-     }
-    ],
+    "findings": [],
     "failed_nodes": [],
-    "retries": 4,
+    "retries": 0,
     "hunk_splits": 0,
     "dropped_findings": 0,
-    "llm_calls": 5
+    "llm_calls": 1
    },
    "clean": {
     "summary": "",
     "findings": [
      {
       "file": "black.py",
-      "line_start": 3123,
+      "line_start": 3130,
       "line_end": 3130,
       "category": "logic",
       "severity": "high",
-      "confidence": 1.0,
-      "message": "`container = container.next_sibling` was moved inside the `else` branch. When `contains_fmt_on_at_column(container, leaf.column)` is True and no child causes an early `return`, the `for child in container.children` loop finishes, but `container` is never updated to `container.next_sibling`. The outer `while` loop then runs again with the exact same `container`, creating an infinite loop.",
+      "confidence": 0.9,
+      "message": "When `contains_fmt_on_at_column(container, leaf.column)` is True, the code yields child nodes and returns without advancing `container` (i.e., `container = container.next_sibling` is skipped in the `if` branch), which creates an infinite loop if the outer `while container is not None` loop depends on `container` being updated.",
       "evidence": [
-       "if contains_fmt_on_at_column(container, leaf.column):",
-       "    for child in container.children:",
-       "        if contains_fmt_on_at_column(child, leaf.column):",
-       "            return",
-       "        yield child",
-       "else:",
-       "    yield container",
-       "    container = container.next_sibling"
+       "        if contains_fmt_on_at_column(container, leaf.column):",
+       "            for child in container.children:",
+       "                if contains_fmt_on_at_column(child, leaf.column):",
+       "                    return",
+       "                yield child",
+       "        else:",
+       "            yield container",
+       "            container = container.next_sibling"
       ],
-      "suggested_fix": "Ensure `container = container.next_sibling` is executed after the `if/else` block on every iteration of the `while` loop."
+      "suggested_fix": null
+     },
+     {
+      "file": "black.py",
+      "line_start": 3157,
+      "line_end": 3161,
+      "category": "logic",
+      "severity": "medium",
+      "confidence": 0.9,
+      "message": "first_leaf_column returns None if a Node's children do not directly contain a Leaf (e.g., if it contains nested Nodes), but line 3147 compares this Optional[int] with an int column, raising a TypeError.",
+      "evidence": [
+       "def first_leaf_column(node: Node) -> Optional[int]:",
+       "    for child in node.children:",
+       "        if isinstance(child, Leaf):",
+       "            return child.column",
+       "    return None",
+       "and first_leaf_column(child) == column"
+      ],
+      "suggested_fix": "Handle the case where first_leaf_column returns None or recursively search for the first leaf column."
      }
     ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "black-3",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   }
+  },
+  {
+   "case_id": "black-4",
+   "stratum": "modification",
+   "buggy": {
+    "summary": "",
+    "findings": [
+     {
+      "file": "black.py",
+      "line_start": 1483,
+      "line_end": 1483,
+      "category": "logic",
+      "severity": "high",
+      "confidence": 1.0,
+      "message": "The removal of the check `if self.previous_line is None` causes `before` to be incorrectly set to a negative value (`0 - self.previous_after`) at the very beginning of a file where `self.previous_after` is non-zero, resulting in negative empty lines being generated at the start of the file.",
+      "evidence": [
+       "-         before =",
+       "-             # Black should not insert empty lines at the beginning",
+       "-             # of the file",
+       "-             0",
+       "-             if self.previous_line is None",
+       "-             else before - self.previous_after",
+       "-         )",
+       "+         before -= self.previous_after"
+      ],
+      "suggested_fix": "Restore the check for `self.previous_line is None` so that `before` is set to `0` at the beginning of the file."
+     }
+    ],
+    "failed_nodes": [],
+    "retries": 0,
+    "hunk_splits": 0,
+    "dropped_findings": 0,
+    "llm_calls": 1
+   },
+   "clean": {
+    "summary": "",
+    "findings": [],
     "failed_nodes": [],
     "retries": 0,
     "hunk_splits": 0,
