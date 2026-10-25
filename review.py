@@ -118,8 +118,9 @@ def main():
     args = parser.parse_args()
 
     if args.demo or (not args.case and not args.diff):
-        # Default demo: black-13
-        run_case_review("black-13", mode=args.mode, retrieval=args.retrieval)
+        # Default demo: black-13 (baseline mode isolates the async for regression)
+        demo_mode = "baseline" if "--mode" not in sys.argv else args.mode
+        run_case_review("black-13", mode=demo_mode, retrieval=args.retrieval)
     elif args.case:
         run_case_review(args.case, mode=args.mode, retrieval=args.retrieval)
     elif args.diff:
